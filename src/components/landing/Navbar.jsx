@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 const Navbar = () => {
   return (
     <nav className="flex items-center justify-between px-6 md:px-12 py-6 bg-transparent border-b border-gray-100 max-w-7xl mx-auto w-full">
-      <div className="flex items-center gap-2 cursor-pointer">
-        <div className="w-8 h-8 md:w-10 md:h-10 bg-brand-purple rounded-xl transform rotate-12 flex items-center justify-center">
-          <span className="text-white font-black text-xl md:text-2xl font-heading -rotate-12 italic">SB</span>
+      <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.href = '/'}>
+        <div className="w-10 h-10 md:w-12 md:h-12 overflow-hidden flex items-center justify-center transition-transform group-hover:scale-110">
+          <img src="/src/assets/logo.png" alt="StudyBuddy Logo" className="w-full h-full object-contain" />
         </div>
         <span className="text-xl md:text-2xl font-black font-heading tracking-tight italic">StudyBuddy</span>
       </div>
