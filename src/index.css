@@ -14,6 +14,12 @@
   --color-brand-purple: #6B4EFE;
   --color-brand-black: #000000;
   --color-brand-white: #F8F9FA;
+  
+  --color-bento-white: #FDFCF8;
+  --color-bento-yellow: #F4E46B;
+  --color-bento-blue: #C5E6FD;
+  --color-bento-green: #D6FFE4;
+  --color-bento-lavender: #E0DAFF;
 }
 
 :root {
@@ -41,6 +47,14 @@ h1, h2, h3, h4, .font-heading {
 
 .glass-pill {
   @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-2;
+}
+
+.squircle {
+  @apply rounded-[1.5rem] md:rounded-[2.5rem];
+}
+
+.pill {
+  @apply rounded-full;
 }
 
 /* Animations */

@@ -12,8 +12,8 @@ const Navbar = () => {
       </div>
 
       <div className="hidden md:flex items-center gap-10">
-        {['About', 'Features', 'Leaderboard', 'Groups'].map((item) => (
-          <a key={item} href={`#${item.toLowerCase()}`} className="text-sm font-bold hover:text-brand-purple transition-colors">
+        {['How it works', 'About', 'Features', 'Leaderboard', 'Groups'].map((item) => (
+          <a key={item} href={item === 'How it works' ? '/how-it-works' : `#${item.toLowerCase()}`} className="text-sm font-bold hover:text-brand-purple transition-colors">
             {item}
           </a>
         ))}

@@ -10,6 +10,7 @@ import FocusOrb from './pages/FocusOrb';
 import Library from './pages/Library';
 import Scanner from './pages/Scanner';
 import LandingPage from './pages/LandingPage';
+import HowItWorks from './pages/HowItWorks';
 
 // Temporary placeholders for other routes
 const Placeholder = ({ title }) => (
@@ -29,6 +30,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
