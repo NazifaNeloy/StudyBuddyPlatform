@@ -1,26 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search } from 'lucide-react';
+import { Search, MapPin, Users as UsersIcon } from 'lucide-react';
 
 const SocialProof = () => {
   const testimonials = [
     {
-      text: "No more boring meeting. We always having fun and laughs!",
-      name: "Teresha",
-      role: "User",
-      avatar: "https://i.pravatar.cc/150?u=10"
+      text: "The Pomodoro timers are a lifesaver for my CSE midterm preps!",
+      name: "Rahim M.",
+      role: "BUET Student",
+      avatar: "https://ui-avatars.com/api/?name=Rahim+M&background=E0DAFF&color=6B4EFE&bold=true"
     },
     {
-      text: "Thanks a lot for this. It's a lifesaver every morning! Teams love it.",
-      name: "Ryan Wilson",
-      role: "Lead Designer",
-      avatar: "https://i.pravatar.cc/150?u=11"
+      text: "Sharing resources in StudyBuddy is so much easier than WhatsApp groups.",
+      name: "Fatema A.",
+      role: "East Delta University",
+      avatar: "https://ui-avatars.com/api/?name=Fatema+A&background=D6FFE4&color=000&bold=true"
     },
     {
-      text: "Everyone became exciting to do virtual meeting. Thanks!",
-      name: "Kayla Smith",
-      role: "User",
-      avatar: "https://i.pravatar.cc/150?u=12"
+      text: "Found my IELTS speaking partner here. We study every evening!",
+      name: "Tanvir H.",
+      role: "NSU Student",
+      avatar: "https://ui-avatars.com/api/?name=Tanvir+H&background=FFF8D6&color=000&bold=true"
     }
   ];
 
@@ -36,7 +36,7 @@ const SocialProof = () => {
             transition={{ delay: i * 0.2 }}
             className="flex flex-col gap-6"
           >
-            <p className="text-lg md:text-xl font-bold leading-tight">"{testi.text}"</p>
+            <p className="text-lg md:text-xl font-bold leading-tight italic">"{testi.text}"</p>
             <div className="flex items-center gap-4">
               <img src={testi.avatar} alt={testi.name} className="w-12 h-12 rounded-full border border-gray-100 shadow-lg" />
               <div>
@@ -53,24 +53,24 @@ const SocialProof = () => {
 
 export const TiltedCards = () => {
   const cards = [
-    { role: "Senior UI/UX Designer", tags: ["Full Time", "Remote", "120K"], color: "bg-pastel-pink", rotate: "-5deg" },
-    { role: "Junior UI/UX Designer", tags: ["Part Time", "Remote", "45K"], color: "bg-pastel-blue", rotate: "2deg" },
-    { role: "Senior Motion Designer", tags: ["Contract", "Hybrid", "110K"], color: "bg-pastel-yellow", rotate: "-3deg" },
-    { role: "Senior Graphic Designer", tags: ["Full Time", "Office", "90K"], color: "bg-pastel-green", rotate: "5deg" },
+    { title: "CSE342 Data Structures", info: "5 Members - Focus Active", color: "bg-pastel-pink", rotate: "-5deg" },
+    { title: "IELTS Speaking Practice", info: "8 Members - Live Sync", color: "bg-pastel-blue", rotate: "2deg" },
+    { title: "SQL Midterm Prep", info: "12 Members - Resource Rich", color: "bg-pastel-orange", rotate: "-3deg" },
+    { title: "BBA Finance", info: "4 Members - Deep Focus", color: "bg-pastel-green", rotate: "5deg" },
   ];
 
   return (
     <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto w-full overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
         <div>
-           <h2 className="text-4xl md:text-6xl font-black font-heading leading-tight mb-4 max-w-md">
-             Explore a Thousand Of New Job Everyday
+           <h2 className="text-4xl md:text-6xl font-black font-heading leading-tight mb-4 max-w-lg">
+             Explore Thousands of Study Groups
            </h2>
         </div>
         <div className="relative w-full max-w-sm">
           <input 
             type="text" 
-            placeholder="Search roles or companies..." 
+            placeholder="Search groups (e.g. CSE, BBA)..." 
             className="w-full bg-white border border-gray-100 rounded-full py-4 pl-6 pr-14 shadow-xl focus:ring-2 focus:ring-brand-purple outline-none"
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-brand-purple rounded-full flex items-center justify-center text-white">
@@ -89,24 +89,20 @@ export const TiltedCards = () => {
             style={{ rotate: card.rotate }}
           >
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
-              <span className="font-black text-2xl">✨</span>
+              <UsersIcon className="w-7 h-7" />
             </div>
             
             <div>
-              <h3 className="text-2xl font-black font-heading leading-tight mb-6">{card.role}</h3>
-              <div className="flex flex-wrap gap-2">
-                {card.tags.map(tag => (
-                   <span key={tag} className="bg-white/30 text-[10px] uppercase font-black tracking-widest px-3 py-1.5 rounded-full">
-                     {tag}
-                   </span>
-                ))}
-              </div>
+              <h3 className="text-2xl font-black font-heading leading-tight mb-6">{card.title}</h3>
+              <p className="text-xs font-black bg-black/5 inline-block px-3 py-1.5 rounded-full uppercase tracking-widest">
+                {card.info}
+              </p>
             </div>
             
             <div className="mt-8 pt-8 border-t border-black/5 flex items-center justify-between">
-               <div className="text-xs font-black">Apply Now</div>
-               <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                 <Search className="w-4 h-4 translate-x-[2px] -translate-y-[2px]" />
+               <div className="text-xs font-black uppercase tracking-widest">Join Circle</div>
+               <div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center">
+                 <Search className="w-5 h-5 translate-x-[2px] -translate-y-[2px]" />
                </div>
             </div>
           </motion.div>
