@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import FocusOrb from './pages/FocusOrb';
 import Library from './pages/Library';
 import Scanner from './pages/Scanner';
+import LandingPage from './pages/LandingPage';
 
 // Temporary placeholders for other routes
 const Placeholder = ({ title }) => (
@@ -27,11 +28,12 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
           <Route 
-            path="/" 
+            path="/dashboard" 
             element={
               <ProtectedRoute>
                 <Layout>

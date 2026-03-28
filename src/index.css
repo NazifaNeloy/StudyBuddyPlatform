@@ -1,21 +1,55 @@
 @import "tailwindcss";
 
+@theme {
+  --font-heading: "Outfit", "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  
+  --color-pastel-purple: #E0DAFF;
+  --color-pastel-blue: #D6EFFF;
+  --color-pastel-yellow: #FFF8D6;
+  --color-pastel-green: #D6FFE4;
+  --color-pastel-orange: #FFEADB;
+  --color-pastel-pink: #FFD6F3;
+  
+  --color-brand-purple: #6B4EFE;
+  --color-brand-black: #000000;
+  --color-brand-white: #F8F9FA;
+}
+
 :root {
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: var(--font-body);
 }
 
 body {
   font-family: var(--font-family);
-  @apply bg-[#0c0c0e] text-white antialiased overflow-x-hidden;
+  @apply bg-brand-white text-brand-black antialiased overflow-x-hidden;
 }
 
-/* Glassmorphism utility */
-.glass {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
 }
 
-/* Premium Gradient */
-.bg-premium {
-  background: radial-gradient(circle at 50% 0%, rgba(170, 59, 255, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+/* Neo-Brutalist Utilities */
+.shadow-brutal {
+  box-shadow: 4px 4px 0px 0px #000000;
+}
+
+.shadow-brutal-hover:hover {
+  box-shadow: 6px 6px 0px 0px #000000;
+  transform: translate(-2px, -2px);
+}
+
+.glass-pill {
+  @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-2;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
