@@ -6,7 +6,7 @@ const BentoNavbar = () => {
     <nav className="flex items-center justify-between px-6 md:px-12 py-8 bg-[#FDFCF8] max-w-7xl mx-auto w-full">
       <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.href = '/'}>
         <div className="w-10 h-10 md:w-12 md:h-12 overflow-hidden flex items-center justify-center transition-transform group-hover:scale-110">
-          <img src="/src/assets/logo.png" alt="StudyBuddy Logo" className="w-full h-full object-contain" />
+          <img src="/src/assets/logo..jpeg" alt="StudyBuddy Logo" className="w-full h-full object-contain" />
         </div>
         <span className="text-xl md:text-2xl font-black font-heading tracking-tight italic text-black">StudyBuddy</span>
       </div>
