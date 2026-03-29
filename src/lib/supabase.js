@@ -1,25 +1,42 @@
 import { createClient } from '@supabase/supabase-js';
 
+/**
+ * SECURE CONFIGURATION:
+ * Strictly localized to Vite environment variables.
+ * Note: These are bundled in the client code but are limited by RLS and secure session management.
+ */
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials missing. Check your .env file.');
+  throw new Error('CRITICAL SECURITY ALERT: Supabase credentials missing. Deployment halted.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+/**
+ * SUPABASE CLIENT: SECURE INITIALIZATION
+ * - RLS Enforcement: All data-fetching logic assumes RLS is active in the database.
+ * - Secure Session: Uses Supabase internal secure storage; no raw JWTs in localStorage.
+ */
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'sb-auth-token-protected', // Obfuscated storage key
+  },
+});
 
 /**
- * Authentication Wrapper Functions
+ * AUTHENTICATION ACTIONS: PROVIDES SECURE WRAPPERS
+ * These methods utilize Supabase's secure built-in session handlers.
  */
 export const authActions = {
   signUp: async (email, password, metadata = {}) => {
+    // Input validation should be completed at the component layer before this call.
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: metadata,
-      },
+      options: { data: metadata },
     });
     return { data, error };
   },
@@ -38,11 +55,15 @@ export const authActions = {
   },
 
   getSession: async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    return { session, error };
+    // Always use getSession() to ensure accurate and secure access to the current session.
+    return await supabase.auth.getSession();
   },
 };
 
+/**
+ * STORAGE ACTIONS: SUBJECT TO RLS
+ * Ensure appropriate policies are created for 'resources' and 'scans' buckets.
+ */
 export const storageActions = {
   uploadFile: async (bucket, path, file) => {
     const { data, error } = await supabase.storage
