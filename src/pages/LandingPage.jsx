@@ -7,14 +7,16 @@ import { RegistrationStrip, Footer } from '../components/landing/FooterAndReg';
 
 const LandingPage = () => {
   return (
-    <div className="bg-brand-white min-h-screen text-brand-black selection:bg-brand-purple selection:text-white">
+    <div className="bg-brand-white min-h-screen text-brand-black selection:bg-brand-purple selection:text-white overflow-x-hidden">
       <Navbar />
       <Hero />
-      <SocialProof />
-      <TiltedCards />
-      <AppShowcase />
-      <TypographyBreak />
-      <NodeGraph />
+      <div id="about"><SocialProof /></div>
+      <div id="features">
+        <TiltedCards />
+        <AppShowcase />
+      </div>
+      <div id="leaderboard"><TypographyBreak /></div>
+      <div id="groups"><NodeGraph /></div>
       <RegistrationStrip />
       <Footer />
     </div>

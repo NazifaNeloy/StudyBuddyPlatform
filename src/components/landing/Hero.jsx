@@ -23,30 +23,29 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative px-6 md:px-12 pt-16 pb-32 max-w-7xl mx-auto overflow-hidden">
+    <section className="relative px-6 md:px-12 pt-16 pb-32 max-w-7xl mx-auto">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
         {/* Left Column */}
-        <div className="relative z-10 text-center lg:text-left">
+        <div className="relative z-10 text-left">
           <motion.h1 
             initial={{ opacity: 0, x: -25 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black font-heading leading-[1.05] tracking-tight mb-8"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black font-heading leading-[1.05] tracking-tight mb-8 break-words"
           >
             Make solo<br />studying more<br />fun with<br />
             <span className="relative inline-block mt-2">
-              <span className="relative z-10">collaboration</span>
-              <svg className="absolute -inset-2 md:-inset-4 w-[110%] h-[150%] text-red-500 -z-10 opacity-70" viewBox="0 0 200 60" fill="none" preserveAspectRatio="none">
+              <span className="relative z-10">collaboration.</span>
+              <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] text-red-500 -z-10 opacity-70" viewBox="0 0 200 60" fill="none" preserveAspectRatio="none">
                 <path d="M5,30 Q50,5 100,5 T195,30 T100,55 T5,30" stroke="currentColor" strokeWidth="2.5" />
               </svg>
             </span>
-            .
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-gray-500 text-lg md:text-xl max-w-md mx-auto lg:mx-0 mb-10 leading-relaxed font-body"
+            className="text-gray-500 text-lg md:text-xl max-w-md mb-10 leading-relaxed font-body"
           >
             Find study partners from your university, track your focus sessions, and share resources effortlessly.
           </motion.p>

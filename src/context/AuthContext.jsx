@@ -12,29 +12,90 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const profileFetcherRef = React.useRef(null);
+
+  const fetchProfile = async (sessionUser) => {
+    if (!sessionUser) return null;
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', sessionUser.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching neural profile:', error.message);
+        return sessionUser;
+      }
+      return { ...sessionUser, ...data };
+    } catch (err) {
+      console.error('fetchProfile: unexpected error:', err);
+      return sessionUser;
+    }
+  };
+
   useEffect(() => {
-    // Get session
-    const setData = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) console.error('Error fetching session:', error);
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
+    let active = true;
+    
+    // Safety timeout: Only force render if sync hasn't resolved within 5s
+    const timeoutId = setTimeout(() => {
+      if (active && loading) {
+        console.warn('AuthProvider: Sync timeout. Continuing with current local heartbeat.');
+        setLoading(false);
+      }
+    }, 10000);
+
+    const initializeAuth = async () => {
+      try {
+        console.log('AuthProvider: Establishing neural link...');
+        
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        if (initialSession?.user) {
+          console.log('AuthProvider: Identity found. Fetching neural profile...');
+          setSession(initialSession);
+          const fullUser = await fetchProfile(initialSession.user);
+          if (active) {
+            setUser(fullUser);
+          }
+        }
+      } catch (err) {
+        console.error('AuthProvider: Sync bottleneck:', err.message);
+      } finally {
+        if (active) {
+          setLoading(false);
+          clearTimeout(timeoutId);
+          console.log('AuthProvider: Global sync complete.');
+        }
+      }
     };
 
-    setData();
+    initializeAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
+        if (!active) return;
+        
         setSession(session);
-        setUser(session?.user || null);
-        setLoading(false);
+        if (session?.user) {
+          const fullUser = await fetchProfile(session.user);
+          if (active) setUser(fullUser);
+        } else {
+          if (active) setUser(null);
+        }
+        
+        if (active) {
+          setLoading(false);
+          clearTimeout(timeoutId);
+        }
       }
     );
 
     return () => {
+      active = false;
       subscription.unsubscribe();
+      clearTimeout(timeoutId);
     };
   }, []);
 

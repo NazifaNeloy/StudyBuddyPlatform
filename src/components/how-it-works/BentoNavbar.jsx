@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const BentoNavbar = () => {
@@ -17,12 +18,12 @@ const BentoNavbar = () => {
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="bg-transparent border border-gray-200 text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-gray-50 transition-all">
+        <Link to="/login" className="bg-transparent border border-gray-200 text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-gray-50 transition-all text-center inline-block">
           Login
-        </button>
-        <button className="bg-black text-white px-6 py-2.5 rounded-full font-bold text-sm hover:opacity-90 transition-all shadow-lg active:scale-95">
+        </Link>
+        <Link to="/signup" className="bg-black text-white px-6 py-2.5 rounded-full font-bold text-sm hover:opacity-90 transition-all shadow-lg active:scale-95 text-center inline-block">
           Sign up
-        </button>
+        </Link>
       </div>
     </nav>
   );

@@ -9,28 +9,29 @@ import Dashboard from './pages/Dashboard';
 import FocusOrb from './pages/FocusOrb';
 import Library from './pages/Library';
 import Scanner from './pages/Scanner';
+import Circles from './pages/Circles';
+import CircleSelection from './pages/CircleSelection';
+import SoloFocus from './pages/SoloFocus';
 import LandingPage from './pages/LandingPage';
 import HowItWorks from './pages/HowItWorks';
+import Settings from './pages/Settings';
+import Calendar from './pages/Calendar';
+import Leaderboard from './pages/Leaderboard';
+import PartnerChat from './pages/PartnerChat';
 
-// Temporary placeholders for other routes
-const Placeholder = ({ title }) => (
-  <Layout>
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-      <h1 className="text-4xl font-bold mb-4 italic tracking-tight italic">{title}</h1>
-      <p className="text-gray-500 max-w-md">
-        This portal is currently being materialized. Stay tuned for Phase 3 and 4!
-      </p>
-    </div>
-  </Layout>
-);
+
+
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" />
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
@@ -38,9 +39,16 @@ function App() {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <Dashboard />
-                </Layout>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/chat" 
+            element={
+              <ProtectedRoute>
+                <PartnerChat />
               </ProtectedRoute>
             } 
           />
@@ -49,7 +57,7 @@ function App() {
             path="/circles" 
             element={
               <ProtectedRoute>
-                <Placeholder title="Study Circles" />
+                <Circles />
               </ProtectedRoute>
             } 
           />
@@ -58,9 +66,7 @@ function App() {
             path="/focus" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <FocusOrb />
-                </Layout>
+                <CircleSelection />
               </ProtectedRoute>
             } 
           />
@@ -69,9 +75,52 @@ function App() {
             path="/library" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <Library />
-                </Layout>
+                <CircleSelection />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/focus/:circleId" 
+            element={
+              <ProtectedRoute>
+                <FocusOrb />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/focus/solo" 
+            element={
+              <ProtectedRoute>
+                <SoloFocus />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/library/:circleId" 
+            element={
+              <ProtectedRoute>
+                <Library />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/calendar" 
+            element={
+              <ProtectedRoute>
+                <Calendar />
               </ProtectedRoute>
             } 
           />
@@ -80,9 +129,7 @@ function App() {
             path="/scanner" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <Scanner />
-                </Layout>
+                <Scanner />
               </ProtectedRoute>
             } 
           />

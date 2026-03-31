@@ -60,7 +60,7 @@ export const TiltedCards = () => {
   ];
 
   return (
-    <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto w-full overflow-hidden">
+    <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto w-full">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
         <div>
            <h2 className="text-4xl md:text-6xl font-black font-heading leading-tight mb-4 max-w-lg">
@@ -79,29 +79,29 @@ export const TiltedCards = () => {
         </div>
       </div>
 
-      <div className="flex -mx-4 pb-12 overflow-x-auto snap-x no-scrollbar md:flex-row flex-col gap-8 md:gap-0 items-center justify-center">
+      <div className="flex flex-col md:flex-row flex-wrap gap-8 lg:gap-12 items-center justify-center py-12">
         {cards.map((card, i) => (
           <motion.div
             key={i}
             whileHover={{ scale: 1.05, zIndex: 50, rotate: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className={`flex-shrink-0 w-80 h-[380px] ${card.color} rounded-[2.5rem] p-10 shadow-xl border border-black/5 -ml-4 first:ml-0 snap-center flex flex-col justify-between`}
+            className={`w-full max-w-[300px] h-[360px] ${card.color} rounded-[2.5rem] p-8 shadow-xl border border-black/5 flex flex-col justify-between cursor-pointer`}
             style={{ rotate: card.rotate }}
           >
-            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
               <UsersIcon className="w-7 h-7" />
             </div>
             
             <div>
-              <h3 className="text-2xl font-black font-heading leading-tight mb-6">{card.title}</h3>
-              <p className="text-xs font-black bg-black/5 inline-block px-3 py-1.5 rounded-full uppercase tracking-widest">
+              <h3 className="text-xl md:text-2xl font-black font-heading leading-tight mb-4">{card.title}</h3>
+              <p className="text-[10px] md:text-xs font-black bg-black/5 inline-block px-3 py-1.5 rounded-full uppercase tracking-widest">
                 {card.info}
               </p>
             </div>
             
-            <div className="mt-8 pt-8 border-t border-black/5 flex items-center justify-between">
-               <div className="text-xs font-black uppercase tracking-widest">Join Circle</div>
-               <div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center">
+            <div className="mt-8 pt-8 border-t border-black/5 flex items-center justify-between group">
+               <div className="text-xs font-black uppercase tracking-widest group-hover:text-brand-purple transition-colors">Join Circle</div>
+               <div className="w-10 h-10 bg-black/10 group-hover:bg-brand-purple group-hover:text-white transition-colors rounded-full flex items-center justify-center">
                  <Search className="w-5 h-5 translate-x-[2px] -translate-y-[2px]" />
                </div>
             </div>

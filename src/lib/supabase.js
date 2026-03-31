@@ -1,35 +1,61 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const getSupabase = () => {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials missing. Check your .env file.');
-}
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Supabase credentials missing. Neural sync terminated.');
+    return null;
+  }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'studybuddy-auth-v1', // Reset key to clear any stuck locks
+      navigatorLock: false // Explicitly disable to avoid multi-tab deadlocks
+    }
+  });
+};
+
+export const supabase = getSupabase();
 
 /**
- * Authentication Wrapper Functions
+ * Authentication Wrapper Functions with Timeout Resilience
  */
 export const authActions = {
   signUp: async (email, password, metadata = {}) => {
-    const { data, error } = await supabase.auth.signUp({
+    // Add a local timeout to ensure we don't hang if the client deadlocks
+    const signUpPromise = supabase.auth.signUp({
       email,
       password,
       options: {
         data: metadata,
       },
     });
-    return { data, error };
+
+    return await Promise.race([
+      signUpPromise,
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Supabase Auth Timeout (Sign Up)')), 30000)
+      )
+    ]);
   },
 
   signIn: async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const signInPromise = supabase.auth.signInWithPassword({
       email,
       password,
     });
-    return { data, error };
+
+    return await Promise.race([
+      signInPromise,
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Supabase Auth Timeout (Sign In)')), 30000)
+      )
+    ]);
   },
 
   signOut: async () => {
