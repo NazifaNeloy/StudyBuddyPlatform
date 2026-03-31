@@ -1,8 +1,43 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Outfit", "Inter", sans-serif;
-  --font-body: "Inter", sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Outfit", "Inter", sans-serif;
+  --font-body: "Inter", "Plus Jakarta Sans", sans-serif;
+  
+  --color-primary: #473be4;
+  --color-primary-dim: #3d2fd6;
+  --color-primary-container: #6159fd;
+  --color-on-primary: #ffffff;
+  
+  --color-secondary: #58569f;
+  --color-secondary-container: #b0aefe;
+  --color-on-secondary: #ffffff;
+  
+  --color-tertiary: #9a189e;
+  --color-tertiary-dim: #005c2c;
+  --color-tertiary-container: #b83ab9;
+  --color-on-tertiary: #ffffff;
+  
+  --color-tertiary-fixed: #ffd6f7;
+  --color-tertiary-fixed-dim: #ffaaf7;
+  
+  --color-background: #fcf8ff;
+  --color-surface: #fcf8ff;
+  --color-on-surface: #1b1b24;
+  --color-surface-container: #f0ecfa;
+  --color-surface-container-high: #eae6f4;
+  --color-surface-container-highest: #e4e1ee;
+  --color-surface-container-low: #f5f2ff;
+  --color-surface-container-lowest: #ffffff;
+  
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  
+  --color-outline: #777587;
+  --color-outline-variant: #c7c4d8;
+  
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
   
   --color-pastel-purple: #E0DAFF;
   --color-pastel-blue: #D6EFFF;
@@ -12,14 +47,8 @@
   --color-pastel-pink: #FFD6F3;
   
   --color-brand-purple: #6B4EFE;
-  --color-brand-black: #000000;
+  --color-brand-black: #1A1A1A;
   --color-brand-white: #F8F9FA;
-  
-  --color-bento-white: #FDFCF8;
-  --color-bento-yellow: #F4E46B;
-  --color-bento-blue: #C5E6FD;
-  --color-bento-green: #D6FFE4;
-  --color-bento-lavender: #E0DAFF;
 }
 
 :root {
@@ -35,22 +64,70 @@ h1, h2, h3, h4, .font-heading {
   font-family: var(--font-heading);
 }
 
-/* Neo-Brutalist Utilities */
-.shadow-brutal {
-  box-shadow: 4px 4px 0px 0px #000000;
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
 }
 
-.shadow-brutal-hover:hover {
-  box-shadow: 6px 6px 0px 0px #000000;
-  transform: translate(-2px, -2px);
+.glass-panel {
+  background: rgba(250, 244, 255, 0.7);
+  backdrop-filter: blur(20px);
 }
 
-.glass-pill {
-  @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-6 py-2;
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .asymmetric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(152, 149, 255, 0.2), transparent);
+  background-size: 200% 100%;
+  animation: shimmer-anim 2s infinite linear;
+}
+
+@keyframes shimmer-anim {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.timer-gradient {
+  background: conic-gradient(from 0deg, #4a3fe2 0%, #9895ff 70%, transparent 70%);
+}
+
+/* THE MODERN-PLAYFUL SYNERGY (RESURRECTED) */
+.shadow-ref {
+  box-shadow: 0px 10px 40px rgba(50, 41, 79, 0.08);
+}
+
+.shadow-ref-xl {
+  box-shadow: 0px 20px 60px rgba(50, 41, 79, 0.12);
+}
+
+.shadow-ref-sm {
+  box-shadow: 0px 5px 20px rgba(50, 41, 79, 0.04);
 }
 
 .squircle {
-  @apply rounded-[1.5rem] md:rounded-[2.5rem];
+  @apply rounded-[2.5rem];
 }
 
 .pill {
@@ -67,3 +144,5 @@ h1, h2, h3, h4, .font-heading {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+

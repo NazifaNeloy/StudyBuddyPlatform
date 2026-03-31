@@ -37,17 +37,23 @@ const sanitizeGeminiResponse = (rawText) => {
 };
 
 export const geminiActions = {
-  scanNotes: async (base64Image, mimeType) => {
+  analyzeStudyMaterial: async (file) => {
     try {
       if (!GEMINI_API_KEY) {
         throw new Error('Gemini API Key is undefined. Check environment configuration.');
       }
 
+      // 1. Convert file to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve) => {
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(file);
+      });
+      const base64Data = await base64Promise;
+
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [
             {
@@ -76,8 +82,8 @@ export const geminiActions = {
                 },
                 {
                   inline_data: {
-                    mime_type: mimeType,
-                    data: base64Image
+                    mime_type: file.type,
+                    data: base64Data
                   }
                 }
               ]

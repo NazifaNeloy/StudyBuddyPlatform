@@ -1,113 +1,114 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Timer, Play, Pause, RotateCcw, MessageSquare, Users, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+
+// Modular Architecture Imports
+import CircleTimer from '../components/circles/CircleTimer';
+import CircleWorkspaceContent from '../components/circles/CircleWorkspaceContent';
+import CircleParticipants from '../components/circles/CircleParticipants';
+import CircleChat from '../components/circles/CircleChat';
 
 const FocusOrb = () => {
   const { user } = useAuth();
+  const { circleId } = useParams();
+  const navigate = useNavigate();
   const [seconds, setSeconds] = useState(1500);
   const [isActive, setIsActive] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [typing, setTyping] = useState([]);
+  const [newMessageText, setNewMessageText] = useState('');
+  const [activeMembers, setActiveMembers] = useState(1);
+  const [circleName, setCircleName] = useState('Neural Protocol');
   const scrollRef = useRef(null);
+
+  // Helper: UUID Validation
+  const isValidUuid = (uuid) => {
+    const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
   
-  // Realtime Logic for Pomodoro
+  // Realtime Logic for Pomodoro (Scoped to Circle)
   useEffect(() => {
-    const channel = supabase.channel('shared_timer')
-      .on('broadcast', { event: 'timer_update' }, ({ payload }) => {
+    if (!circleId || !isValidUuid(circleId)) {
+      if (circleId) {
+        console.warn("Invalid Neural ID detected. Redirecting to Discovery.");
+        navigate('/circles');
+      }
+      return;
+    }
+
+    // Presence & Chat channel
+    const channel = supabase.channel(`focus:${circleId}`, {
+      config: {
+        presence: {
+          key: user?.id || 'anonymous',
+        },
+      },
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        setActiveMembers(Object.keys(state).length);
+      })
+      .on('broadcast', { event: 'timer_sync' }, ({ payload }) => {
         setSeconds(payload.seconds);
         setIsActive(payload.isActive);
       })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  // Timer interval (Sync local state with countdown if active)
-  useEffect(() => {
-    let interval = null;
-    if (isActive && seconds > 0) {
-      interval = setInterval(() => {
-        setSeconds(prev => prev - 1);
-      }, 1000);
-    } else if (seconds === 0) {
-      setIsActive(false);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, seconds]);
-
-  const toggleTimer = () => {
-    const newState = !isActive;
-    setIsActive(newState);
-    // Broadcast state change
-    supabase.channel('shared_timer').send({
-      type: 'broadcast',
-      event: 'timer_update',
-      payload: { seconds, isActive: newState },
-    });
-  };
-
-  const resetTimer = () => {
-    setSeconds(1500);
-    setIsActive(false);
-    supabase.channel('shared_timer').send({
-      type: 'broadcast',
-      event: 'timer_update',
-      payload: { seconds: 1500, isActive: false },
-    });
-  };
-
-  // Realtime Logic for Chat & Presence
-  useEffect(() => {
-    // Fetch initial messages
-    const fetchMessages = async () => {
-      const { data } = await supabase
-        .from('messages')
-        .select('*')
-        .order('created_at', { ascending: true })
-        .limit(50);
-      if (data) setMessages(data);
-    };
-    fetchMessages();
-
-    // Subscribe to new messages & Presence
-    const channel = supabase.channel('chat_room')
-      .on('postgres_changes', { event: 'INSERT', table: 'messages' }, payload => {
-        setMessages(prev => [...prev, payload.new]);
-      })
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        const users = Object.values(state).flat();
-        setTyping(users.filter(u => u.isTyping && u.user_id !== user.id));
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages',
+        filter: `circle_id=eq.${circleId}`
+      }, (payload) => {
+        const msg = {
+          ...payload.new,
+          time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isMe: payload.new.user_id === user?.id
+        };
+        setMessages(prev => [...prev, msg]);
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({ 
-            user_id: user.id, 
-            user_name: user.user_metadata?.full_name || 'Anonymous',
-            isTyping: false 
+        if (status === 'SUBSCRIBED' && user) {
+          await channel.track({
+            user_id: user.id,
+            user_name: user?.email?.split('@')[0] || 'Neural Student',
+            online_at: new Date().toISOString(),
           });
         }
       });
 
+    // Initial Data fetch
+    fetchMessages();
+    fetchCircleDetails();
+
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [circleId, user, navigate]);
 
-  const handleTyping = (e) => {
-    setNewMessage(e.target.value);
-    const channel = supabase.channel('chat_room');
-    channel.track({ 
-      user_id: user.id, 
-      user_name: user.user_metadata?.full_name || 'Anonymous',
-      isTyping: e.target.value.length > 0 
-    });
+  useEffect(() => {
+    let interval = null;
+    if (isActive && seconds > 0) {
+      interval = setInterval(() => {
+        setSeconds((prev) => prev - 1);
+      }, 1000);
+    } else if (seconds === 0 && isActive) {
+      handleSessionComplete();
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
+  const handleSessionComplete = async () => {
+    setIsActive(false);
+    setShowReward(true);
+    
+    // Group protocol usually awarded 25 mins of focus
+    await updateFocusStats(25);
+    
+    setTimeout(() => setShowReward(false), 5000);
   };
 
   useEffect(() => {
@@ -116,137 +117,177 @@ const FocusOrb = () => {
     }
   }, [messages]);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    const { error } = await supabase.from('messages').insert([
-      { 
-        content: newMessage, 
-        user_id: user.id, 
-        user_name: user.user_metadata?.full_name || user.email.split('@')[0]
+  const fetchCircleDetails = async () => {
+    if (!isValidUuid(circleId)) return;
+    try {
+      const { data, error } = await supabase.from('study_circles').select('name').eq('id', circleId).single();
+      if (error) throw error;
+      if (data) setCircleName(data.name);
+    } catch (e) {
+      console.error("Circle details fetch failed:", e.message);
+      // Fallback or navigate away if not found
+      if (e.code === 'PGRST116') {
+        navigate('/circles');
       }
-    ]);
-
-    if (!error) setNewMessage('');
+    }
   };
 
-  const formatTime = (s) => {
-    const mins = Math.floor(s / 60);
-    const secs = s % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  const fetchMessages = async () => {
+    if (!isValidUuid(circleId)) return;
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('circle_id', circleId)
+        .order('created_at', { ascending: true })
+        .limit(50);
+      
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const formatted = data.map(msg => ({
+          ...msg,
+          time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isMe: msg.user_id === user?.id
+        }));
+        setMessages(formatted);
+      } else {
+         // Placeholder context
+         setMessages([
+           { content: "Neural Protocol Active. Waiting for transmissions...", user_name: "System", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isMe: false }
+         ]);
+      }
+    } catch (err) {
+      console.error("Message sync error:", err.message);
+    }
+  };
+
+  const toggleTimer = () => {
+    if (!isValidUuid(circleId)) return;
+    const nextState = !isActive;
+    setIsActive(nextState);
+    const channel = supabase.channel(`focus:${circleId}`);
+    channel.send({
+      type: 'broadcast',
+      event: 'timer_sync',
+      payload: { seconds, isActive: nextState }
+    });
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessageText.trim() || !user || !isValidUuid(circleId)) return;
+
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert([{
+          circle_id: circleId,
+          user_id: user.id,
+          user_name: user?.email?.split('@')[0] || 'Neural Student',
+          content: newMessageText
+        }]);
+
+      if (!error) setNewMessageText('');
+      else throw error;
+    } catch (err) {
+      console.error("Transmission error:", err.message);
+    }
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8 min-h-[calc(100vh-160px)]">
-      {/* Timer Section */}
-      <div className="lg:col-span-2 flex flex-col items-center justify-center space-y-12">
-        <div className="relative group">
-          {/* Pulsing Back Glow */}
-          <motion.div 
-            animate={{ 
-              scale: isActive ? [1, 1.1, 1] : 1,
-              opacity: isActive ? [0.2, 0.4, 0.2] : 0.2
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute inset-0 bg-purple-500 rounded-full blur-[80px] -z-10" 
-          />
-          
-          {/* The Orb */}
-          <motion.div 
-            className="w-64 h-64 md:w-80 md:h-80 rounded-full glass border-white/20 flex flex-col items-center justify-center shadow-2xl relative overflow-hidden"
-            animate={{ rotate: isActive ? 360 : 0 }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 via-transparent to-blue-500/10" />
-            <div className="text-6xl md:text-7xl font-mono font-bold tracking-tighter relative z-10">
-              {formatTime(seconds)}
-            </div>
-            <div className="text-xs uppercase tracking-[0.3em] font-bold text-gray-500 mt-2 relative z-10">
-              {isActive ? 'Hyper Focus' : 'Ready'}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Controls */}
+    <Layout>
+      {/* TopAppBar (Synergy) */}
+      <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-6">
-          <button 
-            onClick={resetTimer}
-            className="w-12 h-12 rounded-2xl glass hover:bg-white/10 flex items-center justify-center transition-all border border-white/10"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </button>
+          <h2 className="text-3xl font-black font-headline tracking-tighter uppercase italic text-primary">Study Circle: {circleName}</h2>
+          <span className="px-5 py-2 bg-tertiary-container/30 text-tertiary rounded-full font-black text-[10px] uppercase tracking-widest flex items-center gap-2 border border-tertiary/10">
+            <span className="w-2 h-2 bg-tertiary rounded-full animate-pulse shadow-[0_0_8px_rgba(154,24,158,0.5)]"></span>
+            LIVE SESSION
+          </span>
+        </div>
+        
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="flex-1 md:w-64 bg-surface-container-high rounded-full px-6 py-3 flex items-center gap-3 border border-black/5 shadow-sm">
+            <span className="material-symbols-outlined text-outline text-xl">search</span>
+            <input 
+              type="text" 
+              placeholder="Search Protocols..." 
+              className="bg-transparent border-none focus:ring-0 text-xs font-black uppercase tracking-widest w-full outline-none placeholder:opacity-30 font-label" 
+            />
+          </div>
           
-          <button 
-            onClick={toggleTimer}
-            className={`w-20 h-20 rounded-3xl flex items-center justify-center transition-all shadow-xl shadow-purple-500/20 active:scale-95 ${
-              isActive ? 'bg-white text-black' : 'bg-purple-600 text-white hover:bg-purple-700'
-            }`}
-          >
-            {isActive ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
-          </button>
-
-          <div className="w-12 h-12 flex items-center justify-center text-gray-500">
-            <Timer className="w-6 h-6" />
+          <div className="flex items-center gap-3">
+             <button className="p-3 rounded-2xl bg-white border border-black/5 shadow-ref-sm text-primary hover:scale-110 active:scale-95 transition-all">
+                <span className="material-symbols-outlined">notifications</span>
+             </button>
+             <div className="w-12 h-12 rounded-full border-2 border-primary-container p-0.5 overflow-hidden shadow-ref-sm">
+                <img 
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id || 'anon'}`} 
+                  alt="User avatar" 
+                  className="w-full h-full object-cover rounded-full" 
+                />
+             </div>
           </div>
+        </div>
+      </header>
+
+      <div className="max-w-[1700px] mx-auto pb-20 overflow-hidden h-[calc(100vh-180px)]">
+        <div className="grid grid-cols-12 gap-8 h-full">
+          
+          {/* Left Space: Timer & Shared Content */}
+          <div className="col-span-12 lg:col-span-8 flex flex-col gap-8 h-full pr-2 overflow-y-auto scrollbar-hide">
+            <CircleTimer 
+              seconds={seconds} 
+              isActive={isActive} 
+              onToggle={toggleTimer} 
+              sessionName="Sync Focus I"
+              participants={activeMembers}
+            />
+            
+            <CircleWorkspaceContent />
+          </div>
+
+          {/* Right Space: Feedback & Synergy */}
+          <div className="col-span-12 lg:col-span-4 flex flex-col gap-8 h-full overflow-hidden">
+             <CircleParticipants count={activeMembers} />
+             
+             <div className="flex-1 min-h-0">
+                <CircleChat 
+                  messages={messages}
+                  newMessage={newMessageText}
+                  onMessageChange={(e) => setNewMessageText(e.target.value)}
+                  onSendMessage={sendMessage}
+                  scrollRef={scrollRef}
+                />
+             </div>
+          </div>
+
         </div>
       </div>
 
-      {/* Chat Section */}
-      <div className="glass rounded-[2rem] border border-white/10 flex flex-col h-[600px] lg:h-auto overflow-hidden">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <h2 className="font-bold flex items-center gap-2">
-            Live Chat
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          </h2>
-          <div className="flex items-center gap-1 text-xs text-gray-500 uppercase tracking-widest font-bold">
-            <Users className="w-4 h-4" />
-            Active: 12
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth" ref={scrollRef}>
-          {messages.map((msg, i) => (
-            <motion.div 
-              key={msg.id || i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className={`flex flex-col ${msg.user_id === user.id ? 'items-end' : 'items-start'}`}
-            >
-              <span className="text-[10px] text-gray-500 mb-1 px-1">{msg.user_name}</span>
-              <div className={`max-w-[85%] px-4 py-2 rounded-2xl text-sm ${
-                msg.user_id === user.id 
-                  ? 'bg-purple-600 text-white rounded-tr-none shadow-lg shadow-purple-500/20' 
-                  : 'bg-white/5 text-gray-200 rounded-tl-none border border-white/5'
-              }`}>
-                {msg.content}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <form onSubmit={sendMessage} className="p-4 bg-white/5 border-t border-white/10 relative">
-          {typing.length > 0 && (
-            <div className="absolute -top-6 left-6 text-[10px] text-purple-400 font-bold animate-pulse">
-              {typing.map(u => u.user_name).join(', ')} is typing...
-            </div>
-          )}
-          <input 
-            type="text"
-            value={newMessage}
-            onChange={handleTyping}
-            placeholder="Type a message..."
-            className="w-full bg-[#0c0c0e] border border-white/10 rounded-xl py-3 pl-4 pr-12 focus:ring-2 focus:ring-purple-500 outline-none transition-all text-sm placeholder:text-gray-600"
-          />
-          <button 
-            type="submit"
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-purple-400 hover:text-white transition-colors"
+      {/* Level Up Notification */}
+      <AnimatePresence>
+        {showReward && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.5, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: -50 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200]"
           >
-            <Send className="w-5 h-5" />
-          </button>
-        </form>
-      </div>
-    </div>
+             <div className="bg-white border border-black/5 rounded-full px-12 py-6 shadow-ref-xl flex items-center gap-8">
+                <div className="w-14 h-14 bg-pastel-yellow rounded-full border border-white/40 flex items-center justify-center animate-bounce shadow-md">
+                  <span className="material-symbols-outlined text-brand-black text-3xl">trophy</span>
+                </div>
+                <div>
+                  <h4 className="font-heading font-black italic text-2xl tracking-tighter text-brand-black">MISSION COMPLETE</h4>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">+50 XP Materialized</p>
+                </div>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Layout>
   );
 };
 
