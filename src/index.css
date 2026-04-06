@@ -46,9 +46,14 @@
   --color-pastel-orange: #FFEADB;
   --color-pastel-pink: #FFD6F3;
   
+  --color-brand-beige: #F2EFE9;
+  --color-brand-lime: #C1FF72;
+  --color-brand-lavender: #E0DAFF;
+  --color-brand-skyblue: #B8E1FF;
+  --color-brand-yellow: #FFF8D6;
   --color-brand-purple: #6B4EFE;
-  --color-brand-black: #1A1A1A;
-  --color-brand-white: #F8F9FA;
+  --color-brand-black: #000000;
+  --color-brand-white: #FFFFFF;
 }
 
 :root {
@@ -56,8 +61,8 @@
 }
 
 body {
-  font-family: var(--font-family);
-  @apply bg-brand-white text-brand-black antialiased overflow-x-hidden;
+  font-family: var(--font-body);
+  @apply bg-brand-beige text-brand-black antialiased overflow-x-hidden font-medium selection:bg-brand-lime;
 }
 
 h1, h2, h3, h4, .font-heading {
@@ -143,6 +148,32 @@ h1, h2, h3, h4, .font-heading {
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+.shadow-soft-diffuse {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+}
+
+.sticker-shadow {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.sticker-pill {
+  @apply bg-white border-2 border-black rounded-full px-4 py-2 flex items-center gap-2;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.sticker-circle {
+  @apply rounded-full border-2 border-black flex items-center justify-center;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 

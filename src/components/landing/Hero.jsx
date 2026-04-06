@@ -1,107 +1,166 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Coffee, Book, Heart, Search, MousePointer2 } from 'lucide-react';
+import iphoneImg from '../../assets/iphone_15.png';
 
 const Hero = () => {
-  const floatingAvatars = [
-    { src: 'https://ui-avatars.com/api/?name=Rahim+M&background=E0DAFF&color=6B4EFE&bold=true', size: 'w-20 h-20 md:w-28 md:h-28', top: '5%', left: '10%' },
-    { src: 'https://ui-avatars.com/api/?name=Fatema+A&background=D6FFE4&color=000&bold=true', size: 'w-16 h-16 md:w-24 md:h-24', top: '40%', left: '0%' },
-    { src: 'https://ui-avatars.com/api/?name=Tanvir+H&background=FFF8D6&color=000&bold=true', size: 'w-24 h-24 md:w-32 md:h-32', top: '10%', right: '0%' },
-    { src: 'https://ui-avatars.com/api/?name=Anika+J&background=FFD6F3&color=000&bold=true', size: 'w-20 h-20 md:w-28 md:h-28', bottom: '10%', left: '25%' },
-    { src: 'https://ui-avatars.com/api/?name=Zayan+K&background=D6EFFF&color=000&bold=true', size: 'w-16 h-16 md:w-24 md:h-24', bottom: '5%', right: '15%' },
-  ];
-
-  const floatingBadges = [
-    { emoji: '📚', top: '25%', left: '35%' },
-    { emoji: '⏳', bottom: '30%', right: '5%' },
-    { emoji: '🎓', top: '15%', left: '50%' },
-  ];
-
-  const chatBubbles = [
-    { text: 'Great notes!', top: '10%', left: '40%', color: 'bg-black text-white' },
-    { text: 'Ready to focus?', bottom: '40%', left: '55%', color: 'bg-pastel-blue text-black' },
-    { text: 'Group joined!', top: '60%', right: '5%', color: 'bg-pastel-green text-black' },
+  const stickers = [
+    { type: 'circle', color: 'bg-[#C1FF72]', text: 'STUDY HARD', pos: 'top-[12%] left-[18%]', rotate: -18 },
+    { type: 'circle', color: 'bg-[#FFD6F3]', text: 'FOCUS NOW', pos: 'top-[20%] right-[15%]', rotate: 15 },
+    { type: 'circle', color: 'bg-[#FFF8D6]', text: 'ACE EXAMS', pos: 'bottom-[45%] left-[10%]', rotate: 10 },
+    { type: 'pill', icon: <Coffee size={18} />, label: 'Coffee Break', pos: 'top-[48%] left-[22%]', rotate: -8, color: 'bg-white' },
+    { type: 'pill', icon: <Book size={18} />, label: 'Exam Prep', pos: 'top-[65%] right-[22%]', rotate: 12, color: 'bg-white' },
+    { type: 'pill', icon: <Heart size={18} />, label: 'Group Study', pos: 'bottom-[35%] right-[28%]', rotate: -15, color: 'bg-white' },
   ];
 
   return (
-    <section className="relative px-6 md:px-12 pt-16 pb-32 max-w-7xl mx-auto">
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left Column */}
-        <div className="relative z-10 text-left">
-          <motion.h1 
-            initial={{ opacity: 0, x: -25 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black font-heading leading-[1.05] tracking-tight mb-8 break-words"
+    <div className="min-h-screen flex flex-col font-sans selection:bg-brand-lime">
+      {/* 1. The Hero "Sticker" Section (Top) */}
+      <section className="relative w-full h-[85vh] bg-[#F2EFE9] flex items-center justify-center overflow-hidden px-6">
+        {/* Floating Stickers Layer */}
+        <div className="absolute inset-0 pointer-events-none">
+          {stickers.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ scale: 0, opacity: 0, rotate: 0 }}
+              animate={{ scale: 1, opacity: 1, rotate: s.rotate }}
+              transition={{ type: 'spring', delay: 0.5 + i * 0.1 }}
+              className={`absolute ${s.pos} z-10`}
+            >
+              {s.type === 'circle' ? (
+                <div className={`w-36 h-36 rounded-full border-2 border-black sticker-shadow ${s.color} flex items-center justify-center relative`}>
+                  <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full animate-spin-slow">
+                    <path id={`circlePath-${i}`} d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="transparent" />
+                    <text className="text-[9px] uppercase font-black tracking-[0.15em] fill-black">
+                      <textPath xlinkHref={`#circlePath-${i}`}>{s.text} • {s.text} • {s.text} • </textPath>
+                    </text>
+                  </svg>
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/10">
+                    <div className="w-6 h-6 bg-black/10 rounded-full" />
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white border-2 border-black rounded-full px-6 py-3 flex items-center gap-3 sticker-shadow">
+                  {s.icon}
+                  <span className="text-xs font-black uppercase tracking-widest">{s.label}</span>
+                </div>
+              )}
+            </motion.div>
+          ))}
+
+          {/* Hand-drawn flourish (SVG Swirl Simple Loop) */}
+          <motion.svg
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 1 }}
+            className="absolute top-[28%] right-[28%] w-56 h-56 text-black opacity-40 -rotate-12"
+            viewBox="0 0 100 100"
+            fill="none"
           >
-            Make solo<br />studying more<br />fun with<br />
-            <span className="relative inline-block mt-2">
-              <span className="relative z-10">collaboration.</span>
-              <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] text-red-500 -z-10 opacity-70" viewBox="0 0 200 60" fill="none" preserveAspectRatio="none">
-                <path d="M5,30 Q50,5 100,5 T195,30 T100,55 T5,30" stroke="currentColor" strokeWidth="2.5" />
-              </svg>
-            </span>
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-gray-500 text-lg md:text-xl max-w-md mb-10 leading-relaxed font-body"
-          >
-            Find study partners from your university, track your focus sessions, and share resources effortlessly.
-          </motion.p>
-          
-          <motion.button 
-             whileHover={{ scale: 1.05 }}
-             whileTap={{ scale: 0.95 }}
-             className="bg-brand-purple text-white px-10 py-5 rounded-full font-black text-lg md:text-xl shadow-lg shadow-brand-purple/20 transition-all shadow-brutal active:translate-y-1"
-          >
-            Get Started
-          </motion.button>
+            <path
+              d="M10,60 C25,20 60,30 50,55 C40,80 80,60 90,40"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          </motion.svg>
         </div>
 
-        {/* Right Column: Floating Masonry */}
-        <div className="relative h-[400px] md:h-[600px] w-full hidden sm:block">
-          {floatingAvatars.map((item, i) => (
-            <motion.div
-              key={i}
-              className={`absolute ${item.size} rounded-full border-4 border-white shadow-xl overflow-hidden`}
-              style={{ top: item.top, left: item.left, right: item.right, bottom: item.bottom }}
-              animate={{ y: [0, -15, 0] }}
-              transition={{ duration: 4, repeat: Infinity, delay: i * 0.5 }}
-            >
-              <img src={item.src} className="w-full h-full object-cover" alt="avatar" />
-            </motion.div>
-          ))}
-
-          {floatingBadges.map((item, i) => (
-            <motion.div
-              key={i}
-              className="absolute text-4xl md:text-6xl"
-              style={{ top: item.top, left: item.left, right: item.right, bottom: item.bottom }}
-              animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
-              transition={{ duration: 3, repeat: Infinity, delay: i * 0.7 }}
-            >
-              {item.emoji}
-            </motion.div>
-          ))}
-
-          {chatBubbles.map((item, i) => (
-            <motion.div
-              key={i}
-              className={`absolute px-4 py-2 rounded-2xl font-black text-xs md:text-base shadow-lg ${item.color}`}
-              style={{ top: item.top, left: item.left, right: item.right, bottom: item.bottom }}
-              animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
-              transition={{ duration: 5, repeat: Infinity, delay: i * 0.3 }}
-            >
-              {item.text}
-            </motion.div>
-          ))}
+        {/* Central iPhone Mockup */}
+        <div className="relative z-20 w-full max-w-[320px] aspect-[9/19.5]">
+          <img src={iphoneImg} alt="iPhone 15 Pro mockup" className="w-full h-full object-contain pointer-events-none drop-shadow-2xl" />
           
-          {/* Background decorative circles */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white rounded-full -z-20 opacity-40 blur-3xl" />
+          {/* App Screen Content Overlay */}
+          <div className="absolute inset-[3.5%] top-[2.5%] bottom-[2.5%] rounded-[3rem] overflow-hidden bg-white px-5 pt-12">
+             <div className="flex justify-between items-center mb-6">
+                <div className="w-10 h-10 rounded-full bg-brand-lavender border-2 border-black flex items-center justify-center font-black text-xs uppercase shadow-sm">SB</div>
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse border border-black/10" />
+             </div>
+
+             {/* Lime Green Card */}
+             <div className="bg-[#C1FF72] p-5 rounded-[2.5rem] mb-4 border-2 border-black sticker-shadow">
+                <h3 className="text-xl font-black leading-[1.1] mb-2 tracking-tight">What are we<br/>studying next?</h3>
+                <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white border-2 border-white/20">
+                  <Search size={16} />
+                </div>
+             </div>
+
+             {/* Search Bar */}
+             <div className="bg-gray-50 border border-black/5 rounded-full py-4 px-5 flex items-center gap-3 mb-6 shadow-inner">
+                <Search size={14} className="text-gray-300" />
+                <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Search a subject...</span>
+             </div>
+
+             {/* Upcoming Sessions Cards */}
+             <h4 className="text-[9px] font-black uppercase tracking-[0.2em] mb-4 opacity-40 px-1">Upcoming Focus</h4>
+             <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
+                {[
+                  { color: 'bg-[#E0DAFF]', title: 'CSE342 Recap' },
+                  { color: 'bg-[#B8E1FF]', title: 'IELTS Prep' },
+                  { color: 'bg-[#FFF8D6]', title: 'SQL Queries' },
+                ].map((card, idx) => (
+                  <div key={idx} className={`${card.color} min-w-[130px] h-36 rounded-3xl p-5 border-2 border-black sticker-shadow flex flex-col justify-between transition-transform hover:scale-105 active:scale-95 cursor-pointer`}>
+                    <div className="w-7 h-7 rounded-lg bg-white/40 border border-black/10 shadow-sm" />
+                    <span className="text-[10px] font-black leading-tight uppercase tracking-tight">{card.title}</span>
+                  </div>
+                ))}
+             </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* 2. The Brand Identity Section (Middle Branding Layout) */}
+      <section className="bg-white pt-8 pb-32 px-6 md:px-12 max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between items-start gap-8 relative overflow-visible">
+        <div className="flex-1 relative flex flex-col items-start">
+           <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.25em] mb-4 block opacity-40 text-left">Your new study friend,</span>
+           
+           <div className="relative inline-block">
+             <h1 className="text-[130px] md:text-[240px] leading-[0.8] font-black font-sans tracking-[-0.05em] text-black">
+               buddy
+             </h1>
+             {/* Underline on 'y' - Thick Black Horizontal Bar */}
+             <div className="absolute right-[0.05em] bottom-[0.05em] w-[0.45em] h-[18px] md:h-[35px] bg-black rounded-sm" />
+             
+             {/* App Icon Square - Overlapping bottom right as per UI */}
+             <motion.div 
+               whileHover={{ scale: 1.05, rotate: 3 }}
+               className="absolute bottom-[-15px] right-[-10px] md:bottom-[-25px] md:right-[-15px] w-24 h-24 md:w-52 md:h-52 bg-[#E0DAFF] rounded-[2rem] md:rounded-[4rem] flex items-center justify-center border-4 md:border-[10px] border-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-20"
+             >
+               <span className="text-2xl md:text-6xl font-black text-white lowercase">buddy</span>
+             </motion.div>
+           </div>
+        </div>
+
+        {/* 3. Technical Metadata Column (Right Side) */}
+        <div className="w-full md:w-72 pt-32 text-left">
+           <div className="space-y-4 mb-20">
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] mb-4">Project</div>
+              {[
+                'Location/Bangladesh',
+                'Project/StudyBuddy',
+                'Date/2026',
+              ].map((text, i) => (
+                <div key={i} className="text-xs md:text-sm font-bold opacity-50 uppercase tracking-tight">
+                  {text}
+                </div>
+              ))}
+           </div>
+
+           <div className="max-w-[220px]">
+             <p className="text-xs md:text-base font-bold leading-relaxed opacity-50 italic tracking-tight">
+               "We provide an extensive array of collaborative tools for students worldwide."
+             </p>
+           </div>
+        </div>
+      </section>
+
+      {/* 4. The Footer Description (Bottom) */}
+      <section className="bg-white pb-48 px-6 md:px-12 max-w-5xl mx-auto w-full">
+         <p className="text-2xl md:text-4xl leading-[1.25] font-bold text-left text-black/60 tracking-tight">
+            Streamline your academic journey with our app, offering seamless session booking, personalized resource recommendations, and real-time updates for hassle-free learning across the country.
+         </p>
+      </section>
+    </div>
   );
 };
 
