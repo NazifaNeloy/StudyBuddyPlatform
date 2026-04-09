@@ -10,4 +10,4 @@ SET priority = 'HIGH'
 WHERE name ILIKE '%exam%' OR name ILIKE '%final%';
 
 -- 3. Ensure the project is linked and password is ready (Assuming already linked)
--- cmd /c npx supabase db push --password 54DaRsC7vJhQPujy
+-- cmd /c npx supabase db push --password YOUR_PASSWORD_HERE
