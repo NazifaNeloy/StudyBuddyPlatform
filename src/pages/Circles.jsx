@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Layout from '../components/Layout';
+import CreateCircleModal from '../components/dashboard/CreateCircleModal';
 
 const Circles = () => {
   const { user } = useAuth();
@@ -15,12 +16,7 @@ const Circles = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [joiningId, setJoiningId] = useState(null);
-
-  const fallbackCircles = [
-    { id: '11111111-1111-1111-1111-111111111111', name: "Quantum Physics", description: "Advanced wave functions and particle mechanics deep dives.", image_url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=400", member_count: [{ count: 12 }] },
-    { id: '22222222-2222-2222-2222-222222222222', name: "Organic Chemistry", description: "Mastering reaction mechanisms and functional group synthesis.", image_url: "https://images.unsplash.com/photo-1532187875302-1df92d701ed8?auto=format&fit=crop&q=80&w=400", member_count: [{ count: 8 }] },
-    { id: '33333333-3333-3333-3333-333333333333', name: "Neurology 401", description: "Mapping brain pathways and synaptic transmission protocols.", image_url: "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=400", member_count: [{ count: 24 }] }
-  ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchCircles = async () => {
     setLoading(true);
@@ -36,13 +32,7 @@ const Circles = () => {
 
       if (circleErr) throw circleErr;
       
-      // Merge with fallbacks for "Initial WOW" factor
-      const merged = [...(allCircles || [])];
-      fallbackCircles.forEach(fb => {
-        if (!merged.find(c => c.name === fb.name)) merged.push(fb);
-      });
-      
-      setCircles(merged);
+      setCircles(allCircles || []);
 
       // 2. Fetch user's current circles to show 'Joined' status
       if (user) {
@@ -132,15 +122,24 @@ const Circles = () => {
             <p className="text-gray-500 font-bold max-w-lg">Find your tribe. Join specialized study groups and scale your knowledge together.</p>
           </div>
 
-          <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-brand-purple transition-colors" size={20} />
-            <input 
-              type="text" 
-              placeholder="Search by topic, university, or tag..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-black/5 rounded-full py-5 pl-14 pr-8 font-black text-lg italic tracking-tighter shadow-ref-xl focus:shadow-brand-purple/5 outline-none transition-all placeholder:text-gray-200"
-            />
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto px-8 py-5 bg-brand-black text-white rounded-full font-heading font-black text-xl italic tracking-tighter shadow-xl hover:shadow-brand-purple/40 transition-all flex items-center justify-center gap-3"
+            >
+              <Plus strokeWidth={3} />
+              Manifest Circle
+            </button>
+            <div className="relative w-full md:w-96 group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-brand-purple transition-colors" size={20} />
+              <input 
+                type="text" 
+                placeholder="Search by topic, university, or tag..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-white border border-black/5 rounded-full py-5 pl-14 pr-8 font-black text-lg italic tracking-tighter shadow-ref-xl focus:shadow-brand-purple/5 outline-none transition-all placeholder:text-gray-200"
+              />
+            </div>
           </div>
         </div>
 
@@ -236,6 +235,12 @@ const Circles = () => {
           </div>
         )}
       </div>
+
+      <CreateCircleModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchCircles}
+      />
     </Layout>
   );
 };

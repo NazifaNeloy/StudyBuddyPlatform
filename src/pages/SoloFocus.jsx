@@ -3,69 +3,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, Play, Pause, RotateCcw, Zap, Flame, Trophy, Star, ChevronLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useFocus } from '../context/FocusContext';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 
 const SoloFocus = () => {
   const { user } = useAuth();
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isActive, setIsActive] = useState(false);
-  const [mode, setMode] = useState('focus'); // focus, short, long
-  const [sessionsCompleted, setSessionsCompleted] = useState(0);
-  const [showReward, setShowReward] = useState(false);
+  const { 
+    isActive, 
+    timeLeft, 
+    mode, 
+    sessionsCompleted, 
+    resumeSession, 
+    pauseSession, 
+    resetSession, 
+    switchMode,
+    modes
+  } = useFocus();
   
-  const timerRef = useRef(null);
+  const [showReward, setShowReward] = useState(false);
 
-  const modes = {
-    focus: { label: 'Deep Focus', minutes: 25, color: 'text-brand-purple', bg: 'bg-brand-purple' },
-    short: { label: 'Short Quest', minutes: 5, color: 'text-pastel-blue', bg: 'bg-pastel-blue' },
-    long: { label: 'Grand Rest', minutes: 15, color: 'text-pastel-green', bg: 'bg-pastel-green' }
-  };
-
+  // Monitor completions to show reward
+  const prevSessions = useRef(sessionsCompleted);
   useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      handleSessionComplete();
-    } else {
-      clearInterval(timerRef.current);
+    if (sessionsCompleted > prevSessions.current) {
+      setShowReward(true);
+      setTimeout(() => setShowReward(false), 5000);
     }
-    return () => clearInterval(timerRef.current);
-  }, [isActive, timeLeft]);
+    prevSessions.current = sessionsCompleted;
+  }, [sessionsCompleted]);
 
-  const handleSessionComplete = async () => {
-    setIsActive(false);
-    setSessionsCompleted(prev => prev + 1);
-    setShowReward(true);
-    
-    // Default back to focus or next break
-    if (mode === 'focus') {
-      const nextMode = (sessionsCompleted + 1) % 4 === 0 ? 'long' : 'short';
-      setMode(nextMode);
-      setTimeLeft(modes[nextMode].minutes * 60);
-      
-      // Update DB with XP/Hours/Streak using the unified hook
-      await updateFocusStats(25);
-    } else {
-      setMode('focus');
-      setTimeLeft(25 * 60);
-    }
-    
-    setTimeout(() => setShowReward(false), 5000);
-  };
-
-  const toggleTimer = () => setIsActive(!isActive);
-  const resetTimer = () => {
-    setIsActive(false);
-    setTimeLeft(modes[mode].minutes * 60);
-  };
-
-  const switchMode = (newMode) => {
-    setMode(newMode);
-    setIsActive(false);
-    setTimeLeft(modes[newMode].minutes * 60);
+  const toggleTimer = () => {
+    if (isActive) pauseSession();
+    else resumeSession();
   };
 
   const formatTime = (seconds) => {
@@ -140,7 +110,7 @@ const SoloFocus = () => {
               <motion.button 
                 whileHover={{ scale: 1.1, rotate: -10 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={resetTimer}
+                onClick={resetSession}
                 className="w-20 h-20 rounded-full border border-black/5 bg-white shadow-ref flex items-center justify-center hover:bg-gray-50 transition-all text-brand-black"
               >
                 <RotateCcw size={32} />

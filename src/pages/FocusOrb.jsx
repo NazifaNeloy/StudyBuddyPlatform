@@ -12,16 +12,27 @@ import CircleParticipants from '../components/circles/CircleParticipants';
 import CircleChat from '../components/circles/CircleChat';
 
 const FocusOrb = () => {
-  const { user } = useAuth();
+  const contextValue = useAuth();
+  const { user, updateFocusStats, isAuthReady } = contextValue;
   const { circleId } = useParams();
   const navigate = useNavigate();
+
+  if (!isAuthReady) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-brand-white">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   const [seconds, setSeconds] = useState(1500);
   const [isActive, setIsActive] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessageText, setNewMessageText] = useState('');
   const [activeMembers, setActiveMembers] = useState(1);
   const [circleName, setCircleName] = useState('Neural Protocol');
+  const [showReward, setShowReward] = useState(false);
   const scrollRef = useRef(null);
+  const startTimeRef = useRef(new Date());
 
   // Helper: UUID Validation
   const isValidUuid = (uuid) => {
@@ -83,9 +94,34 @@ const FocusOrb = () => {
     // Initial Data fetch
     fetchMessages();
     fetchCircleDetails();
+    fetchTimerState();
+
+    // Subscribe to DB changes for timer persistence
+    const timerSub = supabase
+      .channel(`timer:${circleId}`)
+      .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'timer_states',
+        filter: `circle_id=eq.${circleId}`
+      }, (payload) => {
+        const { is_running, seconds_remaining, last_updated } = payload.new;
+        
+        if (is_running) {
+          const timeSinceLastUpdate = Math.floor((new Date() - new Date(last_updated)) / 1000);
+          const remaining = Math.max(seconds_remaining - timeSinceLastUpdate, 0);
+          setSeconds(remaining);
+          setIsActive(true);
+        } else {
+          setSeconds(seconds_remaining);
+          setIsActive(false);
+        }
+      })
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(timerSub);
     };
   }, [circleId, user, navigate]);
 
@@ -105,8 +141,46 @@ const FocusOrb = () => {
     setIsActive(false);
     setShowReward(true);
     
-    // Group protocol usually awarded 25 mins of focus
-    await updateFocusStats(25);
+    try {
+      // 1. Log actual Study Session
+      const endTime = new Date();
+      const durationSeconds = Math.floor((endTime - startTimeRef.current) / 1000);
+      
+      const { error: sessionError } = await supabase
+        .from('study_sessions')
+        .insert([{
+          circle_id: circleId,
+          start_time: startTimeRef.current.toISOString(),
+          end_time: endTime.toISOString(),
+          created_by: user.id
+        }]);
+
+      if (sessionError) throw sessionError;
+
+      // 2. Award XP & Stats (using AuthContext function)
+      const minutes = Math.floor(durationSeconds / 60) || 25; // Default 25 if very short test
+      const { updateFocusStats } = contextValue; // Wait, I need to get this from useAuth
+      if (typeof updateFocusStats === 'function') {
+        await updateFocusStats(minutes);
+      }
+
+      // 3. Reset persistent timer forEveryone
+      await supabase
+        .from('timer_states')
+        .upsert({
+          circle_id: circleId,
+          is_running: false,
+          seconds_remaining: 1500,
+          last_updated: new Date().toISOString()
+        });
+
+      // Reset local timer
+      setSeconds(1500);
+      startTimeRef.current = new Date();
+
+    } catch (err) {
+      console.error('Session Completion Protocol Error:', err.message);
+    }
     
     setTimeout(() => setShowReward(false), 5000);
   };
@@ -117,18 +191,30 @@ const FocusOrb = () => {
     }
   }, [messages]);
 
-  const fetchCircleDetails = async () => {
+  const fetchTimerState = async () => {
     if (!isValidUuid(circleId)) return;
     try {
-      const { data, error } = await supabase.from('study_circles').select('name').eq('id', circleId).single();
+      const { data, error } = await supabase
+        .from('timer_states')
+        .select('*')
+        .eq('circle_id', circleId)
+        .maybeSingle();
+      
       if (error) throw error;
-      if (data) setCircleName(data.name);
-    } catch (e) {
-      console.error("Circle details fetch failed:", e.message);
-      // Fallback or navigate away if not found
-      if (e.code === 'PGRST116') {
-        navigate('/circles');
+      
+      if (data) {
+        if (data.is_running) {
+          const timeSinceLastUpdate = Math.floor((new Date() - new Date(data.last_updated)) / 1000);
+          const remaining = Math.max(data.seconds_remaining - timeSinceLastUpdate, 0);
+          setSeconds(remaining);
+          setIsActive(true);
+        } else {
+          setSeconds(data.seconds_remaining);
+          setIsActive(false);
+        }
       }
+    } catch (err) {
+      console.error("Timer state sync error:", err.message);
     }
   };
 
@@ -162,16 +248,37 @@ const FocusOrb = () => {
     }
   };
 
-  const toggleTimer = () => {
+  const toggleTimer = async () => {
     if (!isValidUuid(circleId)) return;
     const nextState = !isActive;
-    setIsActive(nextState);
-    const channel = supabase.channel(`focus:${circleId}`);
-    channel.send({
-      type: 'broadcast',
-      event: 'timer_sync',
-      payload: { seconds, isActive: nextState }
-    });
+    
+    try {
+      // Optimistic local state
+      setIsActive(nextState);
+
+      // Persist to DB
+      const { error } = await supabase
+        .from('timer_states')
+        .upsert({
+          circle_id: circleId,
+          is_running: nextState,
+          seconds_remaining: seconds,
+          last_updated: new Date().toISOString()
+        }, { onConflict: 'circle_id' });
+      
+      if (error) throw error;
+
+      // Broadcast to other participants for instant response
+      const channel = supabase.channel(`focus:${circleId}`);
+      channel.send({
+        type: 'broadcast',
+        event: 'timer_sync',
+        payload: { seconds, isActive: nextState }
+      });
+    } catch (err) {
+      console.error('Timer Protocol Error:', err.message);
+      setIsActive(!nextState); // Rollback
+    }
   };
 
   const sendMessage = async (e) => {
@@ -200,7 +307,7 @@ const FocusOrb = () => {
       {/* TopAppBar (Synergy) */}
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-6">
-          <h2 className="text-3xl font-black font-headline tracking-tighter uppercase italic text-primary">Study Circle: {circleName}</h2>
+          <h2 className="text-3xl font-black font-headline tracking-tighter uppercase italic text-primary">Study Circle: {circleName || 'Neural Protocol'}</h2>
           <span className="px-5 py-2 bg-tertiary-container/30 text-tertiary rounded-full font-black text-[10px] uppercase tracking-widest flex items-center gap-2 border border-tertiary/10">
             <span className="w-2 h-2 bg-tertiary rounded-full animate-pulse shadow-[0_0_8px_rgba(154,24,158,0.5)]"></span>
             LIVE SESSION
@@ -245,7 +352,7 @@ const FocusOrb = () => {
               participants={activeMembers}
             />
             
-            <CircleWorkspaceContent />
+            <CircleWorkspaceContent circleId={circleId || ''} />
           </div>
 
           {/* Right Space: Feedback & Synergy */}

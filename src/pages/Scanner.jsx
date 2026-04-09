@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -21,16 +22,12 @@ const Scanner = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState('');
   const [error, setError] = useState(null);
   const [circles, setCircles] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [step, setStep] = useState(1); // 1: Upload, 2: Processing, 3: Results
-
-  const fallbackCircles = [
-    { id: '11111111-1111-1111-1111-111111111111', name: "Quantum Physics" },
-    { id: '22222222-2222-2222-2222-222222222222', name: "Organic Chemistry" },
-    { id: '33333333-3333-3333-3333-333333333333', name: "Neurology 401" }
-  ];
 
   React.useEffect(() => {
     if (user) fetchCircles();
@@ -44,15 +41,7 @@ const Scanner = () => {
         .eq('user_id', user.id);
       
       if (error) throw error;
-      const joined = data.map(d => d.study_circles).filter(Boolean);
-      
-      // Merge with fallbacks
-      const merged = [...joined];
-      fallbackCircles.forEach(fb => {
-        if (!merged.find(c => c.name === fb.name)) merged.push(fb);
-      });
-      
-      setCircles(merged);
+      setCircles(data.map(d => d.study_circles).filter(Boolean));
     } catch (err) {
       console.error('Circle Fetch Error:', err);
     }
@@ -65,6 +54,7 @@ const Scanner = () => {
       setPreviewUrl(URL.createObjectURL(file));
       setError(null);
       setScanResult(null);
+      setIsEditing(false);
     }
   };
 
@@ -76,24 +66,26 @@ const Scanner = () => {
     try {
       const result = await geminiActions.analyzeStudyMaterial(selectedFile);
       setScanResult(result);
+      setEditedText(result.fullText);
       setStep(3);
       toast.success("Neural Analysis Complete!");
     } catch (err) {
-      toast.error("The AI portal failed to materialize the scan.");
+      console.error('Extraction Failure:', err);
+      toast.error(err.message || "The AI portal failed to materialize the scan.");
       setStep(1);
     } finally {
       setIsScanning(false);
     }
   };
 
-  const handleSaveToLibrary = async ({ title, circleId }) => {
-    if (!scanResult || !selectedFile || !circleId) return;
+  const handleSaveToLibrary = async ({ title, circleId, keywords }) => {
+    if (!scanResult || !selectedFile) return;
     setIsSaving(true);
     
     try {
       // 1. Upload to Storage
       const fileExt = selectedFile.name.split('.').pop();
-      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('resources')
@@ -114,21 +106,25 @@ const Scanner = () => {
           url: publicUrl,
           file_path: filePath,
           type: selectedFile.type,
-          circle_id: circleId,
+          circle_id: circleId || null, // Allow for personal artifacts (Empty string becomes NULL)
           user_id: user.id,
           summary: scanResult.summary,
-          key_points: scanResult.keyPoints || []
+          key_points: keywords || scanResult.keyPoints || [],
+          content: editedText || scanResult.fullText,
+          file_size: selectedFile.size
         }]);
 
       if (insertError) throw insertError;
 
-      // 4. Reward XP (Gamification synergy)
-      await updateFocusStats(5); // Small award for scanning
+      // 4. Reward XP
+      await updateFocusStats(5);
 
       toast.success("Neural Artifact materialized in your library!");
       setStep(1);
       setSelectedFile(null);
       setPreviewUrl(null);
+      setScanResult(null);
+      setIsEditing(false);
     } catch (err) {
       toast.error("Failed to save artifact: " + err.message);
     } finally {
@@ -138,21 +134,20 @@ const Scanner = () => {
 
   return (
     <Layout>
-      {/* ... previous header code ... */}
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-6">
           <h2 className="text-3xl font-black font-headline tracking-tighter uppercase italic text-primary">Smart Scanner</h2>
           <div className="hidden lg:flex gap-6">
              {['Dashboard', 'Circles', 'Library', 'Calendar'].map((link) => (
-                <a 
+                <Link 
                   key={link} 
-                  href={`/${link.toLowerCase()}`} 
-                  className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40 hover:opacity-100 transition-all"
+                  to={`/${link.toLowerCase()}`} 
+                  className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40 hover:opacity-100 transition-all font-label"
                 >
                   {link}
-                </a>
+                </Link>
               ))}
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary border-b-2 border-primary pb-1 italic">Scanner</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary border-b-2 border-primary pb-1 italic font-label">Scanner</span>
           </div>
         </div>
         
@@ -205,7 +200,7 @@ const Scanner = () => {
                     <div className="flex justify-center">
                        <button 
                         onClick={handlePerformExtraction}
-                        className="bg-brand-black text-white px-16 py-5 rounded-full font-headline font-black text-xl italic tracking-tighter shadow-xl hover:shadow-brand-purple/20 transition-all hover:-translate-y-1"
+                        className="bg-brand-black text-white px-16 py-5 rounded-full font-headline font-black text-xl italic tracking-tighter shadow-xl hover:shadow-brand-purple/20 transition-all hover:-translate-y-1 active:scale-95"
                        >
                          START EXTRACTION
                        </button>
@@ -234,7 +229,10 @@ const Scanner = () => {
                 >
                   <SplitViewResult 
                     previewUrl={previewUrl} 
-                    extractedText={scanResult.summary}
+                    extractedText={scanResult.fullText}
+                    isEditing={isEditing}
+                    editedText={editedText}
+                    onTextChange={setEditedText}
                     confidence={98.4}
                   />
                 </motion.div>
@@ -250,7 +248,7 @@ const Scanner = () => {
               circles={circles}
               isSaving={isSaving}
               onSave={handleSaveToLibrary}
-              onManualCorrection={() => alert("Manual correction portal initialized.")}
+              onManualCorrection={() => setIsEditing(!isEditing)}
             />
           </div>
 

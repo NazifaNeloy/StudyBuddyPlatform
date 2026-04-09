@@ -13,7 +13,13 @@ const ResourceCard = ({ resource, index }) => {
     }
   };
 
-  const styles = getCategoryStyles(type);
+  const formatSize = (bytes) => {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   return (
     <motion.div 
@@ -36,8 +42,12 @@ const ResourceCard = ({ resource, index }) => {
           {title}
         </h4>
         <div className="flex flex-wrap gap-2 mb-6">
-          <span className="bg-secondary-container/20 text-on-secondary-container text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-wider font-label opacity-60">Engineering Circle</span>
-          <span className="bg-surface-container-highest text-on-surface-variant text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-wider font-label opacity-60">12.4 MB</span>
+          <span className={`bg-secondary-container/20 text-on-secondary-container text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-wider font-label ${resource.study_circles?.name ? 'opacity-60' : 'opacity-30'}`}>
+            {resource.study_circles?.name || 'Personal Artifact'}
+          </span>
+          <span className="bg-surface-container-highest text-on-surface-variant text-[8px] px-2 py-1 rounded-md font-black uppercase tracking-wider font-label opacity-60">
+            {formatSize(resource.file_size)}
+          </span>
         </div>
       </div>
 

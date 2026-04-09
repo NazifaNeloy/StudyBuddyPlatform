@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout';
-import { format, addMonths, subMonths } from 'date-fns';
+import { format, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays } from 'date-fns';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,12 +13,22 @@ import AddEventModal from '../components/calendar/AddEventModal';
 const CalendarPage = () => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('Month');
   const [viewDate, setViewDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handlePrevMonth = () => setViewDate(prev => subMonths(prev, 1));
-  const handleNextMonth = () => setViewDate(prev => addMonths(prev, 1));
+  const handlePrev = () => {
+    if (currentView === 'Month') setViewDate(prev => subMonths(prev, 1));
+    else if (currentView === 'Week') setViewDate(prev => subWeeks(prev, 1));
+    else setViewDate(prev => subDays(prev, 1));
+  };
+
+  const handleNext = () => {
+    if (currentView === 'Month') setViewDate(prev => addMonths(prev, 1));
+    else if (currentView === 'Week') setViewDate(prev => addWeeks(prev, 1));
+    else setViewDate(prev => addDays(prev, 1));
+  };
 
   useEffect(() => {
     if (user) fetchEvents();
@@ -88,24 +98,25 @@ const CalendarPage = () => {
       </header>
 
       {/* Main Calendar Space */}
-      <div className="grid grid-cols-12 gap-10 pb-20 items-start">
+      <div className="grid grid-cols-12 gap-6 lg:gap-10 pb-20 items-start">
         
         {/* Left: Main Schedule Canvas */}
         <div className="col-span-12 xl:col-span-9 space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
+            <div className="flex-1">
               <span className="font-label font-bold text-primary uppercase tracking-[0.2em] text-[10px]">Academic Schedule</span>
-              <h3 className="text-4xl md:text-5xl font-headline font-black text-on-surface mt-1 tracking-tighter uppercase italic">
-                {format(viewDate, 'MMMM yyyy')}
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-headline font-black text-on-surface mt-1 tracking-tighter uppercase italic truncate">
+                {currentView === 'Day' ? format(viewDate, 'PPP') : format(viewDate, 'MMMM yyyy')}
               </h3>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="flex bg-surface-container-low p-1 rounded-full border border-outline-variant/10">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex bg-surface-container-low p-1 rounded-full border border-outline-variant/10 shadow-sm">
                 {['Day', 'Week', 'Month'].map(view => (
                   <button 
                     key={view} 
-                    className={`px-5 py-2 text-[10px] font-label font-black uppercase tracking-widest transition-all rounded-full ${view === 'Month' ? 'bg-white text-primary shadow-sm' : 'text-on-surface-variant opacity-40 hover:opacity-100'}`}
+                    onClick={() => setCurrentView(view)}
+                    className={`px-4 sm:px-6 py-2 text-[10px] sm:text-[11px] font-label font-black uppercase tracking-widest transition-all rounded-full ${currentView === view ? 'bg-white text-primary shadow-sm' : 'text-on-surface-variant opacity-40 hover:opacity-100'}`}
                   >
                     {view}
                   </button>
@@ -114,14 +125,14 @@ const CalendarPage = () => {
               
               <div className="flex gap-2">
                 <button 
-                  onClick={handlePrevMonth}
-                  className="w-10 h-10 flex items-center justify-center bg-surface-container-low rounded-xl hover:bg-surface-container-high border border-outline-variant/10 shadow-sm transition-all text-primary"
+                  onClick={handlePrev}
+                  className="w-10 h-10 flex items-center justify-center bg-surface-container-low rounded-xl hover:bg-surface-container-high border border-outline-variant/10 shadow-sm transition-all text-primary active:scale-95"
                 >
                   <span className="material-symbols-outlined">chevron_left</span>
                 </button>
                 <button 
-                  onClick={handleNextMonth}
-                  className="w-10 h-10 flex items-center justify-center bg-surface-container-low rounded-xl hover:bg-surface-container-high border border-outline-variant/10 shadow-sm transition-all text-primary"
+                  onClick={handleNext}
+                  className="w-10 h-10 flex items-center justify-center bg-surface-container-low rounded-xl hover:bg-surface-container-high border border-outline-variant/10 shadow-sm transition-all text-primary active:scale-95"
                 >
                   <span className="material-symbols-outlined">chevron_right</span>
                 </button>
@@ -129,15 +140,16 @@ const CalendarPage = () => {
 
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-label font-bold rounded-full shadow-lg shadow-primary/20 hover:translate-y-[-2px] active:scale-95 transition-all text-[10px] uppercase tracking-widest"
+                className="flex items-center gap-2 px-5 sm:px-8 py-3 bg-primary text-white font-label font-bold rounded-full shadow-lg shadow-primary/20 hover:translate-y-[-2px] active:scale-95 transition-all text-[10px] uppercase tracking-widest sm:ml-2"
               >
                 <span className="material-symbols-outlined text-lg">add</span>
-                Add Event
+                <span className="hidden sm:inline">Add Event</span>
+                <span className="sm:hidden">Event</span>
               </button>
             </div>
           </div>
 
-          <CalendarGrid events={events} viewDate={viewDate} />
+          <CalendarGrid events={events} viewDate={viewDate} view={currentView} />
         </div>
 
         {/* Right: Temporal Intelligence Sidebar */}

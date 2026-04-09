@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
-import { X, Calendar as CalendarIcon, Clock, BookOpen, Loader2 } from 'lucide-react';
+import { X, Calendar as CalendarIcon, Clock, BookOpen, Loader2, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const SchedulerModal = ({ isOpen, onClose, partner, onSuccess }) => {

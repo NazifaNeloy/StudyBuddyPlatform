@@ -4,16 +4,28 @@ import { motion } from 'framer-motion';
 const MetadataSidebar = ({ title, keywords, summary, onSave, onManualCorrection, circles = [], isSaving = false }) => {
   const [selectedCircleId, setSelectedCircleId] = React.useState('');
   const [editTitle, setEditTitle] = React.useState(title || '');
+  const [localKeywords, setLocalKeywords] = React.useState(keywords || []);
+  const [newKeyword, setNewKeyword] = React.useState('');
 
   React.useEffect(() => {
     if (title) setEditTitle(title);
-  }, [title]);
+    if (keywords) setLocalKeywords(keywords);
+  }, [title, keywords]);
 
   React.useEffect(() => {
-    if (circles.length > 0 && !selectedCircleId) {
-      setSelectedCircleId(circles[0].id);
+    // If circles exist but no circle is selected, and it's not currently the 'none' value
+    if (circles.length > 0 && selectedCircleId === '') {
+      // Default to personal vault or first circle? The user asked for personal data support.
+      // We'll leave it as '' which represents Personal Vault.
     }
   }, [circles]);
+
+  const handleAddKeyword = () => {
+    if (newKeyword.trim() && !localKeywords.includes(newKeyword.trim())) {
+      setLocalKeywords([...localKeywords, newKeyword.trim()]);
+      setNewKeyword('');
+    }
+  };
 
   return (
     <div className="lg:col-span-4 space-y-8 h-full">
@@ -26,17 +38,17 @@ const MetadataSidebar = ({ title, keywords, summary, onSave, onManualCorrection,
             value={selectedCircleId}
             onChange={(e) => setSelectedCircleId(e.target.value)}
           >
+            <option value="">None (Personal Vault)</option>
             {circles.map(circle => (
               <option key={circle.id} value={circle.id}>{circle.name}</option>
             ))}
-            {circles.length === 0 && <option value="">No Circles Detected</option>}
           </select>
         </div>
 
         <div>
           <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest block mb-3 font-label opacity-60">Auto-Generated Title</label>
           <input 
-            className="w-full bg-white/70 backdrop-blur-sm border border-outline-variant/10 rounded-xl p-4 font-headline font-black text-on-surface focus:ring-2 focus:ring-primary/40 shadow-sm text-sm italic" 
+            className="w-full bg-white/70 backdrop-blur-sm border border-outline-variant/10 rounded-xl p-4 font-headline font-black text-on-surface focus:ring-2 focus:ring-primary/40 shadow-sm text-sm italic outline-none" 
             type="text" 
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
@@ -47,26 +59,42 @@ const MetadataSidebar = ({ title, keywords, summary, onSave, onManualCorrection,
         <div>
           <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest block mb-4 font-label opacity-60">Neural Keywords Identified</label>
           <div className="flex flex-wrap gap-2">
-            {(keywords || ['Mitochondria', 'ATP Synthesis', 'Metabolism', 'Glucose']).map((tag, i) => (
+            {localKeywords.map((tag, i) => (
               <span key={i} className="px-3 py-2 bg-secondary-container/20 text-on-secondary-container rounded-lg text-[10px] font-black font-label border border-secondary/10 shadow-sm transition-all hover:bg-secondary/10 cursor-pointer">
                 #{tag}
               </span>
             ))}
-            <button className="px-3 py-2 border border-outline-variant border-dashed text-on-surface-variant rounded-lg text-[10px] font-black hover:bg-white transition-all">+ Add Term</button>
+            
+            <div className="flex gap-1">
+              <input 
+                type="text"
+                placeholder="New Term..."
+                className="bg-transparent border-b border-dashed border-outline-variant text-[10px] font-bold w-20 outline-none p-1 placeholder:opacity-30"
+                value={newKeyword}
+                onChange={(e) => setNewKeyword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddKeyword()}
+              />
+              <button 
+                onClick={handleAddKeyword}
+                className="px-2 py-1 border border-outline-variant border-dashed text-on-surface-variant rounded-lg text-[10px] font-black hover:bg-white transition-all"
+              >
+                + Add
+              </button>
+            </div>
           </div>
         </div>
         
         <div>
           <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest block mb-3 font-label opacity-60">AI Executive Summary</label>
           <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 text-xs text-on-surface-variant italic leading-relaxed font-body border border-outline-variant/10 shadow-inner">
-             "{summary || "This lecture covers the fundamental bioenergetics of the cell, specifically focusing on the three main stages of cellular respiration and the structural role of the mitochondria in energy production."}"
+             {summary ? `"${summary}"` : "Neural matrix is ready for summarization."}
           </div>
         </div>
         
         <div className="pt-6 space-y-4">
           <button 
-            onClick={() => onSave({ title: editTitle, circleId: selectedCircleId })}
-            disabled={isSaving || !selectedCircleId}
+            onClick={() => onSave({ title: editTitle, circleId: selectedCircleId, keywords: localKeywords })}
+            disabled={isSaving}
             className="w-full bg-gradient-to-r from-primary to-primary-container text-white py-4 rounded-full font-headline font-black uppercase text-xs flex items-center justify-center gap-3 shadow-xl shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 italic disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>

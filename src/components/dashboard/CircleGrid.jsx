@@ -6,14 +6,30 @@ const CircleGrid = ({ circles }) => {
   return (
     <section>
       <div className="flex justify-between items-end mb-6">
-        <h3 className="text-2xl font-black font-headline tracking-tighter uppercase italic text-on-background">Active Study Circles</h3>
-        <Link to="/circles" className="text-primary font-black uppercase tracking-widest text-[10px] hover:underline mb-2">View All Protocols</Link>
+        <div>
+          <h3 className="text-2xl font-black font-headline tracking-tighter uppercase italic text-on-background">Active Study Circles</h3>
+          <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Your Collaborative Hubs</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link to="/circles" className="text-primary font-black uppercase tracking-widest text-[10px] hover:underline">View All</Link>
+          <button 
+            onClick={() => {
+              // This relies on the parent Dashboard having the modal state.
+              // Actually, I should probably pass the setter as a prop or use a custom event.
+              window.dispatchEvent(new CustomEvent('openCreateCircle'));
+            }}
+            className="p-3 bg-brand-black text-white rounded-xl shadow-lg hover:bg-brand-purple transition-all flex items-center justify-center"
+          >
+            <span className="material-symbols-outlined">add</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {circles.map((circle, idx) => (
+        {(circles || []).map((circle, idx) => (
+          circle && (
           <div 
-            key={circle.id}
+            key={circle.id || `fallback-circle-${idx}`}
             className="bg-surface-container-lowest p-6 rounded-lg shadow-ref group hover:-translate-y-1 transition-all border border-black/5"
           >
             <div className="flex justify-between items-start mb-4">
@@ -57,6 +73,7 @@ const CircleGrid = ({ circles }) => {
               </Link>
             </div>
           </div>
+          )
         ))}
 
         {circles.length === 0 && (

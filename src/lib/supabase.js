@@ -24,8 +24,7 @@ const getSupabase = () => {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      storageKey: 'sb-auth-token-protected', // Obfuscated storage key
-      navigatorLock: false // Explicitly disable to avoid multi-tab deadlocks
+      navigatorLock: false
     }
   });
 };

@@ -42,7 +42,7 @@ const Library = ({ circleId: propCircleId }) => {
     try {
       let query = supabase
         .from('resources')
-        .select('*')
+        .select('*, study_circles(name)')
         .order('created_at', { ascending: false });
       
       if (circleId) {
@@ -56,8 +56,9 @@ const Library = ({ circleId: propCircleId }) => {
       if (error) throw error;
       if (data) {
         setResources(data);
-        // Calculate storage: Assume average 150KB per artifact for demo
-        setUsedStorage(Number((data.length * 0.15).toFixed(1)));
+        // Calculate real storage in GB (Total bytes -> GB)
+        const totalBytes = data.reduce((acc, curr) => acc + (Number(curr.file_size) || 0), 0);
+        setUsedStorage(Number((totalBytes / (1024 * 1024 * 1024)).toFixed(3)));
       }
     } catch (err) {
       console.error('Neural Repository Sync Failure:', err);
@@ -68,7 +69,7 @@ const Library = ({ circleId: propCircleId }) => {
 
   const handleFileSelect = async (e) => {
     const uploadFile = e.target.files[0];
-    if (!uploadFile || !circleId || !user) return;
+    if (!uploadFile || !user) return;
     
     setLoading(true);
     try {
@@ -86,20 +87,21 @@ const Library = ({ circleId: propCircleId }) => {
       const { error: dbError } = await supabase
         .from('resources')
         .insert([{
-          circle_id: circleId,
+          circle_id: circleId || null, // Allow personal storage if no circle context
           user_id: user.id,
           title: uploadFile.name.split('.')[0],
           type: uploadFile.type.split('/')[0] || 'document',
           url: publicUrl,
-          file_path: fileName
+          file_path: fileName,
+          file_size: uploadFile.size // Record real file size
         }]);
 
       if (dbError) throw dbError;
       fetchResources();
-      alert("Neural Artifact uploaded successfully!");
+      toast.success("Neural Artifact uploaded successfully!");
     } catch (err) {
       console.error('Transmission Error:', err);
-      alert("Upload failed: " + err.message);
+      toast.error("Upload failed: " + err.message);
     } finally {
       setLoading(false);
     }

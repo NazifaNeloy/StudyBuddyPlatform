@@ -1,12 +1,40 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const CircleWorkspaceContent = () => {
-  const concepts = [
-    { id: 1, title: 'Wave-Particle Duality' },
-    { id: 2, title: 'Heisenberg Uncertainty' },
-    { id: 3, title: 'Quantum Entanglement' },
-  ];
+import { supabase } from '../../lib/supabase';
+
+const CircleWorkspaceContent = ({ circleId }) => {
+  const [concepts, setConcepts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchResources = async () => {
+      if (!circleId) return;
+      try {
+        const { data } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('circle_id', circleId)
+          .eq('type', 'concept')
+          .limit(5);
+        
+        if (data && data.length > 0) {
+          setConcepts(data.map(r => ({ id: r.id, title: r.title })));
+        } else {
+          setConcepts([
+            { id: 1, title: 'Neural Baseline Established' },
+            { id: 2, title: 'Waiting for Research Input' }
+          ]);
+        }
+      } catch (e) {
+        console.error('Resource sync error:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, [circleId]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1">

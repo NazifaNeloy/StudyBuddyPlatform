@@ -35,3 +35,13 @@ dist-ssr/
 
 # Testing & Coverage
 coverage/
+
+# Agent & Scratch
+.agents/
+scratch/
+skills-lock.json
+
+# Temporary Scripts
+check-db.js
+diagnose.cjs
+tmp-*.js

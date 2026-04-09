@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, UserCheck, UserX, MessageSquare, Calendar as CalendarIcon, CheckCircle2 } from 'lucide-react';
+import { Bell, UserCheck, UserX, MessageSquare, Calendar as CalendarIcon, CheckCircle2, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const NotificationCenter = () => {
@@ -82,7 +82,41 @@ const NotificationCenter = () => {
   };
 
   const handleConnectionAction = async (notification, action) => {
-    const { connection_id, sender_id } = notification.metadata;
+    if (!notification?.metadata) {
+      console.warn('Notification metadata missing for action:', action);
+      return;
+    }
+    const { connection_id, sender_id, matched_user_id } = notification.metadata;
+
+    if (notification.type === 'match_found' && action === 'connect') {
+      // 1. Create connection record
+      const { data: connData, error: connError } = await supabase
+        .from('connections')
+        .insert({
+          user_id_1: user.id,
+          user_id_2: matched_user_id,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (connError) {
+        toast.error('Connection initialization failed.');
+        return;
+      }
+
+      // 2. Notify the other user
+      await supabase.from('notifications').insert({
+        user_id: matched_user_id,
+        type: 'connection_request',
+        content: `Neural Match: ${user.user_metadata?.full_name || 'Someone'} wants to synchronize protocols with you!`,
+        metadata: { connection_id: connData.id, sender_id: user.id }
+      });
+
+      toast.success('Connection request transmitted!', { icon: '📡' });
+      await markAsRead(notification.id);
+      return;
+    }
 
     if (action === 'accept') {
       const { error: connError } = await supabase
@@ -176,6 +210,7 @@ const NotificationCenter = () => {
                          {n.type === 'message' && <MessageSquare className="w-5 h-5 text-brand-black" />}
                          {n.type === 'session_scheduled' && <CalendarIcon className="w-5 h-5 text-brand-black" />}
                          {n.type === 'connection_accepted' && <CheckCircle2 className="w-5 h-5 text-brand-black" />}
+                         {n.type === 'match_found' && <Zap className="w-5 h-5 text-brand-black" />}
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -199,9 +234,26 @@ const NotificationCenter = () => {
                             </button>
                           </div>
                         )}
+
+                        {n.type === 'match_found' && !n.is_read && (
+                          <div className="flex gap-2 mt-3">
+                            <button
+                              onClick={() => handleConnectionAction(n, 'connect')}
+                              className="bg-primary text-white px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                            >
+                              Initialize Link
+                            </button>
+                            <button
+                              onClick={() => markAsRead(n.id)}
+                              className="bg-white border border-black/10 text-brand-black/60 px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] hover:bg-gray-50 active:scale-95 transition-all"
+                            >
+                              Ignore
+                            </button>
+                          </div>
+                        )}
                         
                         <p className="text-[9px] font-bold text-brand-black/30 uppercase tracking-[0.1em] mt-2">
-                          {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just Now'}
                         </p>
                       </div>
                     </div>

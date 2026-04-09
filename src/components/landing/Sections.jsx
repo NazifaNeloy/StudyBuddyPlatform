@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Users as UsersIcon } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 import adnanImg from '../../assets/asset_adnan.png';
 import nusratImg from '../../assets/asset_nusrat.png';
 import tanvirImg from '../../assets/asset_tanvir.png';
@@ -63,12 +64,46 @@ const SocialProof = () => {
 };
 
 export const TiltedCards = () => {
-  const cards = [
+  const [cards, setCards] = React.useState([
     { title: "CSE342 Data Structures", info: "5 Members - Focus Active", color: "bg-[#FFD6F3]", rotate: "-5deg" },
     { title: "IELTS Speaking Practice", info: "8 Members - Live Sync", color: "bg-[#B8E1FF]", rotate: "2deg" },
     { title: "SQL Midterm Prep", info: "12 Members - Resource Rich", color: "bg-[#FFEADB]", rotate: "-3deg" },
     { title: "BBA Finance", info: "4 Members - Deep Focus", color: "bg-[#C1FF72]", rotate: "5deg" },
-  ];
+  ]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchLiveCircles = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('study_circles')
+          .select(`
+            *,
+            member_count:circle_members(count)
+          `)
+          .limit(4);
+        
+        if (data && data.length > 0) {
+          const colors = ["bg-[#FFD6F3]", "bg-[#B8E1FF]", "bg-[#FFEADB]", "bg-[#C1FF72]"];
+          const rotates = ["-5deg", "2deg", "-3deg", "5deg"];
+          
+          const transformed = data.map((circle, i) => ({
+            title: circle.name,
+            info: `${circle.member_count?.[0]?.count || 0} Members - ${circle.priority} Priority`,
+            color: colors[i % colors.length],
+            rotate: rotates[i % rotates.length]
+          }));
+          setCards(transformed);
+        }
+      } catch (err) {
+        console.error('Failed to sync live cards:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLiveCircles();
+  }, []);
 
   return (
     <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto w-full overflow-visible">

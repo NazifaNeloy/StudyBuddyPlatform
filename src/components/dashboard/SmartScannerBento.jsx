@@ -2,8 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-const SmartScannerBento = () => {
+const SmartScannerBento = ({ count = 0 }) => {
   const navigate = useNavigate();
+
+  const getMessage = () => {
+    if (count === 0) return "Start scanning your notes to unlock powerful AI insights and custom flashcards.";
+    if (count < 5) return `We've identified key patterns in your first ${count} scans. Upload more to generate a full mastery deck!`;
+    return `Neural intelligence has synthesized ${count} of your resources. Your custom quiz is ready.`;
+  };
 
   return (
     <section className="bg-gradient-to-br from-secondary to-secondary-dim p-8 rounded-xl text-on-secondary shadow-xl relative overflow-hidden group">
@@ -20,7 +26,7 @@ const SmartScannerBento = () => {
         
         <h3 className="text-2xl font-black font-headline tracking-tighter mb-2 leading-tight uppercase italic">AI Insights: "Smart Scanner"</h3>
         <p className="text-on-secondary/80 text-[11px] font-medium mb-8 leading-relaxed max-w-[240px]">
-          We've identified 3 key topics from your chemistry notes that might appear on tomorrow's quiz. Want a custom flashcard deck?
+          {getMessage()}
         </p>
         
         <button 

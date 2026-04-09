@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Mail, Loader2, User } from 'lucide-react';
 import Navbar from '../components/landing/Navbar';
+import { useAuth } from '../context/AuthContext';
 
 import { authActions } from '../lib/supabase';
 
@@ -12,7 +13,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { user, isAuthReady } = useAuth();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (isAuthReady && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, isAuthReady, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

@@ -12,9 +12,11 @@ import AchievementVault from '../components/dashboard/AchievementVault';
 import StudySchedule from '../components/dashboard/StudySchedule';
 import SmartScannerBento from '../components/dashboard/SmartScannerBento';
 import CreateCircleModal from '../components/dashboard/CreateCircleModal';
+import NeuralNetworkBento from '../components/dashboard/NeuralNetworkBento';
+import ActiveFocusHUD from '../components/dashboard/ActiveFocusHUD';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
@@ -22,16 +24,16 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [sessionHistory, setSessionHistory] = useState([0, 0, 0, 0, 0, 0, 0]);
+  const [resourceCount, setResourceCount] = useState(0);
+  const [matchedUsers, setMatchedUsers] = useState([]);
 
   const filteredCircles = (userCircles || []).filter(c => 
-    c.name?.toLowerCase().includes(search.toLowerCase())
+    c && c.name?.toLowerCase().includes((search || '').toLowerCase())
   );
 
-  useEffect(() => {
-    if (user) fetchDashboardData();
-  }, [user]);
-
-  const fetchDashboardData = async () => {
+  async function fetchDashboardData() {
+    if (!user?.id) return;
     setLoading(true);
     try {
       // 1. Profile Retrieval
@@ -65,12 +67,88 @@ const Dashboard = () => {
         .limit(3);
       
       setTasks(tasks || []);
+
+      // 4. Session History (Neural Density)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { data: sessions } = await supabase
+        .from('study_sessions')
+        .select('*')
+        .eq('created_by', user.id)
+        .gte('created_at', sevenDaysAgo.toISOString());
+      
+      const history = [0, 0, 0, 0, 0, 0, 0];
+      if (Array.isArray(sessions)) {
+        sessions.forEach(session => {
+          if (!session || !session.created_at || !session.start_time || !session.end_time) return;
+          try {
+            const day = new Date(session.created_at).getDay();
+            const start = new Date(session.start_time);
+            const end = new Date(session.end_time);
+            
+            if (!isNaN(start) && !isNaN(end)) {
+              const diffInMinutes = Math.floor((end - start) / 60000);
+              if (!isNaN(diffInMinutes) && diffInMinutes >= 0) {
+                history[day] = (history[day] || 0) + diffInMinutes;
+              }
+            }
+          } catch (e) {
+            console.warn('Malformed session data encountered:', e);
+          }
+        });
+      }
+      setSessionHistory(history);
+
+      // 5. Resource Count (AI Scans)
+      // 6. Neural Matching (Interest Overlap)
+      if (profile?.interests && profile.interests.length > 0) {
+        const { data: matches } = await supabase
+          .from('profiles')
+          .select('id, full_name, interests')
+          .neq('id', user.id)
+          .overlaps('interests', profile.interests)
+          .limit(4);
+
+        if (matches) {
+          const processedMatches = matches.map(m => {
+            const overlap = m.interests.find(i => profile.interests.includes(i));
+            const strength = m.interests.filter(i => profile.interests.includes(i)).length;
+            return {
+              ...m,
+              shared_interest: overlap,
+              strength: strength
+            };
+          });
+          setMatchedUsers(processedMatches);
+        }
+      }
+
     } catch (err) {
       console.error('Neural Sync Error:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    if (user && isAuthReady) {
+       fetchDashboardData();
+    }
+
+    const handleOpenModal = () => setIsCreateModalOpen(true);
+    window.addEventListener('openCreateCircle', handleOpenModal);
+    return () => window.removeEventListener('openCreateCircle', handleOpenModal);
+  }, [user?.id, isAuthReady]);
+
+  if (!isAuthReady || loading) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-brand-white z-[9999]">
+        <div className="w-16 h-16 border-8 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse italic">Synchronizing Neural Data...</p>
+      </div>
+    );
+  }
 
 
   return (
@@ -120,6 +198,8 @@ const Dashboard = () => {
         
         {/* Left Column: Core Focus */}
         <div className="space-y-10">
+          <ActiveFocusHUD />
+          
           <WelcomeHero 
             userName={profileData?.full_name || user?.email?.split('@')[0] || 'Neural Student'} 
             streak={profileData?.streak || 0}
@@ -128,14 +208,33 @@ const Dashboard = () => {
 
           <CircleGrid circles={filteredCircles} />
 
-          <AchievementVault totalXp={profileData?.total_xp || 0} />
+          <NeuralNetworkBento 
+            matches={matchedUsers} 
+            onAction={fetchDashboardData}
+          />
+
+          <AchievementVault 
+            totalXp={profileData?.total_xp || 0} 
+            userBadges={profileData?.badges || []} 
+          />
         </div>
 
         {/* Right Column: Temporal & AI Intelligence */}
         <div className="space-y-10">
+          <section className="bg-white/50 p-6 rounded-2xl border border-black/5">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">Academic Focus</h3>
+            <div className="flex flex-wrap gap-2">
+              {profileData?.interests?.map(interest => (
+                <span key={interest} className="px-3 py-1.5 bg-pastel-pink rounded-xl text-[10px] font-bold text-brand-black border border-black/5 shadow-sm">
+                  {interest}
+                </span>
+              )) || <p className="text-[10px] opacity-40 italic">No interests detected.</p>}
+            </div>
+          </section>
+
           <StudySchedule tasks={tasks} />
 
-          <SmartScannerBento />
+          <SmartScannerBento count={resourceCount} />
 
           <section className="bg-surface-container-lowest p-8 rounded-xl shadow-ref border border-outline-variant/10">
              <div className="flex items-center gap-4 mb-6">
@@ -145,14 +244,19 @@ const Dashboard = () => {
                 <h3 className="text-xl font-black font-headline tracking-tighter uppercase italic">Neural Density</h3>
              </div>
              <div className="h-32 flex items-end gap-2 px-2">
-                {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
-                  <motion.div 
-                    key={i}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    className={`flex-1 rounded-t-lg ${i === 3 ? 'bg-primary' : 'bg-surface-container-highest opacity-40'}`}
-                  />
-                ))}
+                {sessionHistory.map((minutes, i) => {
+                  const maxMinutes = Math.max(...sessionHistory, 60);
+                  const h = (minutes / maxMinutes) * 100;
+                  return (
+                    <motion.div 
+                      key={i}
+                      initial={{ height: 0 }}
+                      animate={{ height: `${Math.max(h, 5)}%` }}
+                      className={`flex-1 rounded-t-lg transition-all ${minutes > 0 ? 'bg-primary' : 'bg-surface-container-highest opacity-40'}`}
+                      title={`${minutes} minutes focused`}
+                    />
+                  );
+                })}
              </div>
              <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-center opacity-40">Weekly Activity Log</p>
           </section>

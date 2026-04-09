@@ -1,16 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const AchievementVault = ({ totalXp = 0 }) => {
+const AchievementVault = ({ totalXp = 0, userBadges = [] }) => {
   const currentLevel = Math.floor(totalXp / 1000) || 1;
   const nextLevelXp = (currentLevel + 1) * 1000;
   const progress = totalXp > 0 ? ((totalXp % 1000) / 1000) * 100 : 0;
 
-  const badges = [
-    { icon: 'workspace_premium', label: 'FOCUS MASTER', color: 'text-primary' },
-    { icon: 'groups', label: 'COLLABORATOR', color: 'text-secondary' },
-    { icon: 'local_library', label: 'LIBRARIAN', color: 'text-tertiary' }
-  ];
+  // Real-world badge library mappings
+  const badgeLibrary = {
+    'Focus Master': { icon: 'workspace_premium', color: 'text-primary' },
+    'Collaborator': { icon: 'groups', color: 'text-secondary' },
+    'Librarian': { icon: 'local_library', color: 'text-tertiary' },
+    'Early Bird': { icon: 'wb_sunny', color: 'text-yellow-500' },
+    'Night Owl': { icon: 'bedtime', color: 'text-brand-purple' },
+    'Streak King': { icon: 'auto_awesome', color: 'text-orange-500' }
+  };
 
   return (
     <section className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10 shadow-sm relative overflow-hidden">
@@ -43,20 +47,23 @@ const AchievementVault = ({ totalXp = 0 }) => {
         </div>
 
         <div className="grid grid-cols-3 gap-3 shrink-0">
-          {badges.map((badge) => (
-            <motion.div 
-              key={badge.label}
-              whileHover={{ y: -5, scale: 1.05 }}
-              className="w-20 h-20 bg-white rounded-2xl shadow-ref-sm flex flex-col items-center justify-center p-2 text-center border border-black/5"
-            >
-              <span className={`material-symbols-outlined ${badge.color} text-3xl mb-1.5`} style={{ fontVariationSettings: "'FILL' 1" }}>
-                {badge.icon}
-              </span>
-              <span className="text-[8px] font-black font-label leading-tight uppercase tracking-tighter opacity-70">
-                {badge.label}
-              </span>
-            </motion.div>
-          ))}
+          {(userBadges.length > 0 ? userBadges : ['Librarian']).slice(0, 3).map((badgeName) => {
+            const badge = badgeLibrary[badgeName] || { icon: 'verified', color: 'text-gray-400' };
+            return (
+              <motion.div 
+                key={badgeName}
+                whileHover={{ y: -5, scale: 1.05 }}
+                className="w-20 h-20 bg-white rounded-2xl shadow-ref-sm flex flex-col items-center justify-center p-2 text-center border border-black/5"
+              >
+                <span className={`material-symbols-outlined ${badge.color} text-3xl mb-1.5`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                  {badge.icon}
+                </span>
+                <span className="text-[8px] font-black font-label leading-tight uppercase tracking-tighter opacity-70">
+                  {badgeName.toUpperCase()}
+                </span>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
