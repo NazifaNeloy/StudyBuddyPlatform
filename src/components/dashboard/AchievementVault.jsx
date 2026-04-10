@@ -47,23 +47,36 @@ const AchievementVault = ({ totalXp = 0, userBadges = [] }) => {
         </div>
 
         <div className="grid grid-cols-3 gap-3 shrink-0">
-          {(userBadges.length > 0 ? userBadges : ['Librarian']).slice(0, 3).map((badgeName) => {
-            const badge = badgeLibrary[badgeName] || { icon: 'verified', color: 'text-gray-400' };
-            return (
-              <motion.div 
-                key={badgeName}
-                whileHover={{ y: -5, scale: 1.05 }}
-                className="w-20 h-20 bg-white rounded-2xl shadow-ref-sm flex flex-col items-center justify-center p-2 text-center border border-black/5"
+          {userBadges.length > 0 ? (
+            userBadges.slice(0, 3).map((badgeName) => {
+              const badge = badgeLibrary[badgeName] || { icon: 'verified', color: 'text-gray-400' };
+              return (
+                <motion.div 
+                  key={badgeName}
+                  whileHover={{ y: -5, scale: 1.05 }}
+                  className="w-20 h-20 bg-white rounded-2xl shadow-ref-sm flex flex-col items-center justify-center p-2 text-center border border-black/5"
+                >
+                  <span className={`material-symbols-outlined ${badge.color} text-3xl mb-1.5`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {badge.icon}
+                  </span>
+                  <span className="text-[8px] font-black font-label leading-tight uppercase tracking-tighter opacity-70">
+                    {badgeName.toUpperCase()}
+                  </span>
+                </motion.div>
+              );
+            })
+          ) : (
+            // Empty Slots Visual
+            [1, 2, 3].map((i) => (
+              <div 
+                key={i}
+                className="w-20 h-20 bg-white/40 rounded-2xl border-2 border-dashed border-black/10 flex flex-col items-center justify-center p-2 text-center"
               >
-                <span className={`material-symbols-outlined ${badge.color} text-3xl mb-1.5`} style={{ fontVariationSettings: "'FILL' 1" }}>
-                  {badge.icon}
-                </span>
-                <span className="text-[8px] font-black font-label leading-tight uppercase tracking-tighter opacity-70">
-                  {badgeName.toUpperCase()}
-                </span>
-              </motion.div>
-            );
-          })}
+                <span className="material-symbols-outlined text-black/10 text-2xl mb-1.5">lock</span>
+                <span className="text-[7px] font-bold uppercase tracking-tighter opacity-20">Locked</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

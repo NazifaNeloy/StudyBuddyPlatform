@@ -101,6 +101,13 @@ const Dashboard = () => {
       setSessionHistory(history);
 
       // 5. Resource Count (AI Scans)
+      const { count: resCount, error: resError } = await supabase
+        .from('resources')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      
+      if (!resError) setResourceCount(resCount || 0);
+
       // 6. Neural Matching (Interest Overlap)
       if (profile?.interests && profile.interests.length > 0) {
         const { data: matches } = await supabase
