@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
   User, 
@@ -22,18 +22,22 @@ import toast from 'react-hot-toast';
 import Layout from '../components/Layout';
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [profile, setProfile] = useState({
     full_name: '',
     email: '',
-    major: 'Computer Science'
+    major: '',
+    interface_mode: 'light',
+    accent_color: 'brand-purple',
+    notification_settings: {
+      study_circle_alerts: true,
+      resource_updates: true,
+      system_announcements: false
+    }
   });
   const [loading, setLoading] = useState(false);
-  const [notifications, setNotifications] = useState({
-    study_circle_alerts: true,
-    resource_updates: true,
-    system_announcements: false
-  });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user) fetchProfile();
@@ -52,12 +56,40 @@ const Settings = () => {
         setProfile({
           full_name: data.full_name || '',
           email: user.email,
-          major: data.major || 'Computer Science'
+          major: data.major || '',
+          avatar_url: data.avatar_url || '',
+          interface_mode: data.interface_mode || 'light',
+          accent_color: data.accent_color || 'brand-purple',
+          notification_settings: data.notification_settings || {
+            study_circle_alerts: true,
+            resource_updates: true,
+            system_announcements: false
+          }
         });
+        
+        // Apply theme/accent immediately
+        if (data.accent_color) {
+           document.documentElement.style.setProperty('--color-brand-purple', getHexColor(data.accent_color));
+        }
+        if (data.interface_mode === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
       }
     } catch (err) {
       console.error('Profile Retrieval Error:', err);
     }
+  };
+
+  const getHexColor = (colorName) => {
+    const colors = {
+      'brand-purple': '#6B4EFE',
+      'pink': '#9a189e',
+      'red': '#ba1a1a',
+      'teal': '#006a6a'
+    };
+    return colors[colorName] || colors['brand-purple'];
   };
 
   const saveProfile = async () => {
@@ -68,6 +100,9 @@ const Settings = () => {
         .update({
           full_name: profile.full_name,
           major: profile.major,
+          interface_mode: profile.interface_mode,
+          accent_color: profile.accent_color,
+          notification_settings: profile.notification_settings,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -79,6 +114,84 @@ const Settings = () => {
       toast.error("Encryption failure. Protocol not saved.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      toast.error("Only image files are accepted.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB.");
+      return;
+    }
+
+    setUploading(true);
+    const toastId = toast.loading("Uploading neural asset...");
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `avatar_${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      console.log('--- Avatar Materialization Started ---');
+      console.log('File:', fileName, 'Path:', filePath);
+
+      // 1. Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+      console.log('✓ Storage Upload Successful');
+
+      // 2. Get Public URL
+      const { data: { publicUrl: rawUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+      
+      // Add cache buster
+      const publicUrl = `${rawUrl}?t=${Date.now()}`;
+      console.log('✓ Public URL Generated:', publicUrl);
+
+      // 3. Update Profile Table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+      console.log('✓ Database Profile Updated');
+
+      // 4. Update Local State Immediately
+      setProfile(prev => ({
+        ...prev,
+        avatar_url: publicUrl
+      }));
+
+      // 5. Refresh Context and Finalize
+      toast.success("Avatar selection synchronized!", { id: toastId });
+      
+      console.log('--- Finalizing Global Sync ---');
+      if (typeof refreshProfile === 'function') {
+        await refreshProfile();
+        console.log('✓ Global AuthContext Refreshed');
+      }
+      
+    } catch (err) {
+      console.error('Neural Asset Materialization Failed:', err);
+      const errorMessage = err.message || "Encryption failure. Connection unstable.";
+      toast.error(`Neural Link Failure: ${errorMessage}`, { id: toastId });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -107,17 +220,36 @@ const Settings = () => {
 
             <div className="flex flex-col md:flex-row gap-12 items-start">
               <div className="relative group shrink-0">
-                <div className="w-40 h-40 rounded-[2.5rem] bg-pastel-blue border-4 border-white shadow-ref-sm overflow-hidden relative">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleAvatarUpload} 
+                  className="hidden" 
+                  accept="image/*"
+                />
+                <div className={`w-40 h-40 rounded-[2.5rem] bg-pastel-blue border-4 border-white shadow-ref-sm overflow-hidden relative ${uploading ? 'opacity-50' : ''}`}>
                   <img 
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`} 
+                    src={profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`} 
                     alt="Profile" 
                     className="w-full h-full object-cover transition-transform group-hover:scale-110" 
                   />
-                  <div className="absolute inset-0 bg-brand-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  {uploading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-brand-black/20 backdrop-blur-sm">
+                      <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 bg-brand-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                  >
                     <Camera className="text-white" size={32} />
                   </div>
                 </div>
-                <button className="absolute -bottom-2 -right-2 bg-brand-purple text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform active:scale-95 border-4 border-white">
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute -bottom-2 -right-2 bg-brand-purple text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform active:scale-95 border-4 border-white disabled:opacity-50"
+                >
                   <Camera size={18} />
                 </button>
               </div>
@@ -178,12 +310,24 @@ const Settings = () => {
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-on-surface-variant opacity-60">Interface Mode</p>
                   <div className="grid grid-cols-2 gap-4">
-                    <button className="flex flex-col items-center gap-3 p-6 rounded-[2rem] bg-gray-50 border-4 border-brand-purple shadow-ref-sm">
-                      <Sun className="text-brand-purple" size={32} />
+                    <button 
+                      onClick={() => {
+                        setProfile({...profile, interface_mode: 'light'});
+                        document.documentElement.classList.remove('dark');
+                      }}
+                      className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all ${profile.interface_mode === 'light' ? 'bg-white border-brand-purple shadow-ref-sm' : 'bg-gray-50 border-transparent opacity-60'}`}
+                    >
+                      <Sun className={profile.interface_mode === 'light' ? 'text-brand-purple' : 'text-gray-400'} size={32} />
                       <span className="text-[10px] font-black uppercase tracking-widest">Atheneum</span>
                     </button>
-                    <button className="flex flex-col items-center gap-3 p-6 rounded-[2rem] bg-gray-100 border-4 border-transparent text-gray-400 opacity-50">
-                      <Moon size={32} />
+                    <button 
+                      onClick={() => {
+                        setProfile({...profile, interface_mode: 'dark'});
+                        document.documentElement.classList.add('dark');
+                      }}
+                      className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all ${profile.interface_mode === 'dark' ? 'bg-white border-brand-purple shadow-ref-sm' : 'bg-gray-50 border-transparent opacity-60'}`}
+                    >
+                      <Moon className={profile.interface_mode === 'dark' ? 'text-brand-purple' : 'text-gray-400'} size={32} />
                       <span className="text-[10px] font-black uppercase tracking-widest">Oblivion</span>
                     </button>
                   </div>
@@ -192,13 +336,25 @@ const Settings = () => {
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-on-surface-variant opacity-60">Accent Synergy</p>
                   <div className="flex flex-wrap gap-4">
-                    <button className="w-10 h-10 rounded-full bg-brand-purple ring-4 ring-brand-purple/20 ring-offset-4 flex items-center justify-center">
-                      <Check className="text-white" size={18} />
-                    </button>
-                    <button className="w-10 h-10 rounded-full bg-[#9a189e] hover:scale-110 transition-transform"></button>
-                    <button className="w-10 h-10 rounded-full bg-[#ba1a1a] hover:scale-110 transition-transform"></button>
-                    <button className="w-10 h-10 rounded-full bg-[#006a6a] hover:scale-110 transition-transform"></button>
-                    <div className="w-10 h-10 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-brand-purple transition-colors">
+                    {[
+                      { name: 'brand-purple', color: '#6B4EFE' },
+                      { name: 'pink', color: '#9a189e' },
+                      { name: 'red', color: '#ba1a1a' },
+                      { name: 'teal', color: '#006a6a' }
+                    ].map((accent) => (
+                      <button 
+                        key={accent.name}
+                        onClick={() => {
+                          setProfile({...profile, accent_color: accent.name});
+                          document.documentElement.style.setProperty('--color-brand-purple', accent.color);
+                        }}
+                        style={{ backgroundColor: accent.color }}
+                        className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${profile.accent_color === accent.name ? 'ring-4 ring-brand-purple/20 ring-offset-4 scale-110' : 'hover:scale-110'}`}
+                      >
+                        {profile.accent_color === accent.name && <Check className="text-white" size={18} />}
+                      </button>
+                    ))}
+                    <div className="w-10 h-10 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center cursor-not-allowed opacity-40">
                       <Plus className="text-gray-300" size={18} />
                     </div>
                   </div>
@@ -226,14 +382,20 @@ const Settings = () => {
             </div>
 
             <div className="space-y-8">
-              {Object.entries(notifications).map(([key, val]) => (
+              {Object.entries(profile.notification_settings).map(([key, val]) => (
                 <div key={key} className="flex items-center justify-between p-2">
                   <div>
                     <p className="font-heading font-black text-lg italic tracking-tighter uppercase">{key.replace(/_/g, ' ')}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-60">Status: {val ? 'Active Signal' : 'Signal Muted'}</p>
                   </div>
                   <div 
-                    onClick={() => setNotifications({...notifications, [key]: !val})}
+                    onClick={() => setProfile({
+                      ...profile, 
+                      notification_settings: {
+                        ...profile.notification_settings,
+                        [key]: !val
+                      }
+                    })}
                     className={`w-16 h-9 rounded-full border border-black/5 cursor-pointer transition-all p-1.5 relative flex items-center ${val ? 'bg-pastel-green' : 'bg-gray-100'}`}
                   >
                     <motion.div 
