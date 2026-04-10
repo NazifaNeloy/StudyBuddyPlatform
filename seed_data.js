@@ -19,10 +19,9 @@ async function seed() {
   console.log("Starting neural seeding protocol...");
 
   const circles = [
-    { name: "Quantum Physics", description: "Advanced wave functions and particle mechanics deep dives.", image_url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=400" },
-    { name: "Organic Chemistry", description: "Mastering reaction mechanisms and functional group synthesis.", image_url: "https://images.unsplash.com/photo-1532187875302-1df92d701ed8?auto=format&fit=crop&q=80&w=400" },
-    { name: "Neurology 401", description: "Mapping brain pathways and synaptic transmission protocols.", image_url: "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=400" },
-    { name: "Algorithmic Theory", description: "Complex data structures and computational efficiency analysis.", image_url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400" }
+    { name: "General Science", description: "A hub for general scientific discussion and collaborative learning.", image_url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=400" },
+    { name: "Mathematics Hub", description: "Solving complex equations and sharing mathematical insights.", image_url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400" },
+    { name: "Academic Commons", description: "Standard study hub for all academic disciplines and focus sessions.", image_url: "https://images.unsplash.com/photo-1532187875302-1df92d701ed8?auto=format&fit=crop&q=80&w=400" }
   ];
 
   for (const circle of circles) {
