@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export const RegistrationStrip = () => {
   return (
-    <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto w-full text-center">
+    <section className="px-6 md:px-12 py-20 md:py-32 max-w-7xl mx-auto w-full text-center">
       <h2 className="text-4xl md:text-6xl font-black font-heading mb-4 px-2">Create Your <span className="text-brand-purple">Academic</span> Profile</h2>
       <p className="text-gray-500 mb-12 max-w-md mx-auto">
         Join the hub to connect with students from BUET, DU, EDU and more.
@@ -32,14 +32,14 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="bg-black text-white py-40 px-6 md:px-12 text-center relative overflow-hidden flex flex-col items-center justify-center">
+    <footer className="bg-black text-white py-20 md:py-40 px-6 md:px-12 text-center relative overflow-hidden flex flex-col items-center justify-center">
       <div className="absolute top-10 flex items-center gap-2 opacity-50">
         <span className="text-xl font-black font-heading tracking-tight italic">StudyBuddy</span>
       </div>
       
       <div className="relative z-10 w-full">
         <h2 className="text-5xl md:text-8xl lg:text-[10rem] font-black font-heading leading-none tracking-tighter mb-4">
-          LET'S FIND YOUR<br />STUDY PARTNER
+          LET'S FIND YOUR<br className="hidden md:block" />STUDY PARTNER
         </h2>
         
         {/* Floating tags */}
@@ -54,7 +54,7 @@ export const Footer = () => {
                 x: [tag.x, tag.x + 10, tag.x]
               }}
               transition={{ duration: 4, repeat: Infinity, delay: i * 0.4 }}
-              className={`absolute top-1/2 left-1/2 ${tag.color} text-black font-black text-[10px] md:text-xs uppercase tracking-widest px-4 md:px-6 py-2 md:py-3 rounded-full shadow-2xl`}
+              className={`absolute hidden md:flex top-1/2 left-1/2 ${tag.color} text-black font-black text-[10px] md:text-xs uppercase tracking-widest px-4 md:px-6 py-2 md:py-3 rounded-full shadow-2xl`}
               style={{ transform: `translate(${tag.x}px, ${tag.y}px) rotate(${tag.rotate}deg)` }}
             >
               {tag.title}
@@ -63,8 +63,8 @@ export const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-20 pt-20 border-t border-white/10 w-full max-w-7xl flex flex-col md:flex-row items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest gap-6">
-         <div>Copyright © 2026 StudyBuddy - Empowering Bangladeshi Students</div>
+      <div className="mt-12 md:mt-20 pt-12 md:pt-20 border-t border-white/10 w-full max-w-7xl flex flex-col md:flex-row items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest gap-6">
+         <div className="text-center md:text-left">Copyright © 2026 StudyBuddy - Empowering Bangladeshi Students</div>
          <div className="flex gap-8">
             <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
             <a href="#" className="hover:text-white transition-colors">Twitter</a>

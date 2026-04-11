@@ -24,15 +24,15 @@ import asset_anika from '../../assets/asset_anika.png';
 
 export const AppShowcase = () => {
   return (
-    <section className="px-6 md:px-12 py-32 bg-white border-y border-black/5 max-w-7xl mx-auto w-full relative overflow-visible flex flex-col items-center">
+    <section className="px-6 md:px-12 py-20 md:py-32 bg-white border-y border-black/5 max-w-7xl mx-auto w-full relative overflow-visible flex flex-col items-center">
 
-      <div className="mb-20 text-center relative z-10">
+      <div className="mb-12 md:mb-20 text-center relative z-10">
         <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-4 block">Visual Interface</span>
         <h2 className="text-4xl md:text-6xl font-black font-heading tracking-tight italic">everything is connected.</h2>
       </div>
 
       {/* Floating UI Stickers ("Chaos" Layer) around the phone */}
-      <div className="absolute inset-0 pointer-events-none overflow-visible z-0">
+      <div className="absolute inset-0 pointer-events-none overflow-visible z-0 hidden md:block">
         
         {/* Mint Circular Sticker */}
         <motion.div 
@@ -262,8 +262,8 @@ export const TypographyBreak = () => {
   ];
 
   return (
-    <section className="px-6 md:px-12 py-40 max-w-7xl mx-auto w-full">
-      <div className="flex flex-col md:flex-row items-end justify-between gap-12 mb-24">
+    <section className="px-6 md:px-12 py-20 md:py-40 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 md:gap-12 mb-16 md:mb-24">
         <div className="max-w-xl">
            <h2 className="text-4xl md:text-6xl font-black font-heading leading-[1.05] tracking-tight mb-8">
              Stay focused without<br />ever feeling <span className="text-brand-purple italic">alone.</span>
@@ -320,7 +320,7 @@ export const NodeGraph = () => {
   ];
 
   return (
-    <section className="px-6 md:px-12 py-32 bg-brand-white border-y border-gray-100 max-w-7xl mx-auto w-full relative h-[600px] flex items-center justify-center overflow-hidden">
+    <section className="px-6 md:px-12 py-20 md:py-32 bg-brand-white border-y border-gray-100 max-w-7xl mx-auto w-full relative h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden">
       {/* Node SVG Lines */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none stroke-gray-200 stroke-2" style={{ strokeDasharray: '4 4' }}>
         {users.map((user, i) => (
@@ -334,9 +334,9 @@ export const NodeGraph = () => {
         whileInView={{ scale: 1, opacity: 1 }}
         className="relative z-10 text-center glass-pill p-10 md:p-16 rounded-[4rem] flex flex-col items-center shadow-brutal"
       >
-        <h2 className="text-4xl md:text-6xl font-black font-heading leading-tight mb-4">
-          Collaborate, Track<br />and Succeed with 
-          <div className="bg-brand-purple text-white px-4 py-1 rounded-full text-3xl md:text-4xl inline-block mt-4 italic mx-2">Focus Groups</div>
+        <h2 className="text-3xl md:text-6xl font-black font-heading leading-tight mb-4">
+          Collaborate, Track<br className="hidden md:block" />and Succeed with 
+          <div className="bg-brand-purple text-white px-3 md:px-4 py-1 rounded-full text-2xl md:text-4xl inline-block mt-3 md:mt-4 italic mx-1 md:mx-2">Focus Groups</div>
         </h2>
         <div className="relative w-full max-w-sm mt-8">
            <input type="text" placeholder="your.university@domain.edu" className="w-full bg-white border border-gray-100 rounded-full py-4 px-6 pr-32 outline-none shadow-xl text-sm" />
@@ -353,7 +353,7 @@ export const NodeGraph = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: i * 0.3 }}
-          className="absolute flex items-center gap-3 p-1 rounded-full pr-6 shadow-xl border border-white/50 bg-white"
+          className="absolute hidden md:flex items-center gap-3 p-1 rounded-full pr-6 shadow-xl border border-white/50 bg-white"
           style={{ top: `${user.y}%`, left: `${user.x}%`, zIndex: 10 }}
         >
           <img src={user.avatar} className={`w-12 h-12 rounded-full border-2 border-white ${user.color}`} alt={user.name} />

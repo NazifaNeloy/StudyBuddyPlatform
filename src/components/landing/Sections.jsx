@@ -32,9 +32,9 @@ const SocialProof = () => {
   ];
 
   return (
-    <section className="px-6 md:px-12 py-32 bg-[#F9FAFB] border-y border-gray-50">
+    <section className="px-6 md:px-12 py-20 md:py-32 bg-[#F9FAFB] border-y border-gray-50">
       <div className="max-w-7xl mx-auto w-full">
-        <h2 className="text-4xl md:text-5xl font-black font-heading mb-20 text-[#1A1A1A]">Everyone loves it!</h2>
+        <h2 className="text-4xl md:text-5xl font-black font-heading mb-12 md:mb-20 text-[#1A1A1A]">Everyone loves it!</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
           {testimonials.map((testi, i) => (
             <motion.div 
@@ -108,10 +108,10 @@ export const TiltedCards = () => {
   }, []);
 
   return (
-    <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto w-full overflow-visible">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+    <section className="px-6 md:px-12 py-20 md:py-32 max-w-7xl mx-auto w-full overflow-visible">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16 md:mb-24">
         <div className="max-w-2xl">
-           <h2 className="text-4xl md:text-7xl font-black font-heading leading-[0.95] tracking-tight mb-6">
+           <h2 className="text-4xl md:text-6xl lg:text-7xl font-black font-heading leading-[0.95] tracking-tight mb-6">
              Explore Thousands<br/>Of New Study Circles<br/>Everyday
            </h2>
         </div>

@@ -82,12 +82,12 @@ const CommunityHero = () => {
               className="absolute top-[5%] left-[5%] z-20"
             >
               <div className="relative group">
-                <div className="absolute -top-10 -right-4 z-30 transform hover:-rotate-12 transition-transform cursor-default">
+                <div className="absolute -top-10 -right-4 z-30 transform hover:-rotate-12 transition-transform cursor-default hidden md:block">
                   <div className="bg-black text-white px-4 py-2 rounded-2xl shadow-xl font-black text-xs tracking-widest uppercase flex items-center gap-2">
                     LOL!! <Smile size={14} className="text-yellow-400" />
                   </div>
                 </div>
-                <div className="absolute -left-16 bottom-[10%] z-30 transform hover:rotate-6 transition-transform cursor-default">
+                <div className="absolute -left-16 bottom-[10%] z-30 transform hover:rotate-6 transition-transform cursor-default hidden md:flex">
                   <div className="bg-white border-2 border-gray-100 px-4 py-2 rounded-2xl shadow-lg font-black text-[#6C5CE7] text-xs tracking-tighter uppercase flex items-center gap-2">
                     🎧 BUET PREP?
                   </div>
@@ -106,12 +106,12 @@ const CommunityHero = () => {
               className="absolute top-[10%] right-[5%] z-20"
             >
               <div className="relative group">
-                <div className="absolute -top-6 -left-10 z-30 transform hover:rotate-12 transition-transform cursor-default">
+                <div className="absolute -top-6 -left-10 z-30 transform hover:rotate-12 transition-transform cursor-default hidden md:block">
                   <div className="bg-black text-white px-5 py-2 rounded-2xl shadow-xl font-black text-xs tracking-widest uppercase">
                     HAHA!
                   </div>
                 </div>
-                <div className="absolute -right-8 bottom-[20%] z-30">
+                <div className="absolute -right-8 bottom-[20%] z-30 hidden md:flex">
                   <div className="w-16 h-16 bg-[#B8E1FF] rounded-[1.5rem] flex items-center justify-center shadow-lg border-2 border-white rotate-12">
                      <Zap size={24} className="text-[#6C5CE7]" />
                   </div>
@@ -130,12 +130,12 @@ const CommunityHero = () => {
               className="absolute bottom-[5%] left-[25%] z-20"
             >
               <div className="relative group">
-                <div className="absolute -left-12 top-[10%] z-30">
+                <div className="absolute -left-12 top-[10%] z-30 hidden md:flex">
                    <div className="w-16 h-16 bg-[#FFEADB] rounded-[1.5rem] flex items-center justify-center shadow-lg border-2 border-white -rotate-12">
                       <Calculator size={24} className="text-[#FF5A36]" />
                    </div>
                 </div>
-                <div className="absolute -right-16 top-[40%] z-30 transform hover:rotate-6 transition-transform cursor-default">
+                <div className="absolute -right-16 top-[40%] z-30 transform hover:rotate-6 transition-transform cursor-default hidden md:block">
                   <div className="bg-black text-white px-5 py-2 rounded-2xl shadow-xl font-black text-xs tracking-widest uppercase">
                     NICE!
                   </div>
@@ -162,14 +162,14 @@ const CommunityHero = () => {
             </motion.div>
 
             {/* "I WIN" Circle */}
-            <div className="absolute bottom-[35%] right-[5%] z-20 transform -rotate-12">
+            <div className="absolute bottom-[25%] md:bottom-[35%] right-[0%] md:right-[5%] z-20 transform -rotate-12 hidden md:block">
               <div className="bg-black text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
                  <span className="text-xs font-black uppercase tracking-widest">I SOLVED IT! 🧠</span>
               </div>
             </div>
 
             {/* "CHILL VIBES" Circle */}
-            <div className="absolute top-[50%] left-[20%] z-20 transform rotate-12">
+            <div className="absolute top-[50%] left-[0%] md:left-[20%] z-20 transform rotate-12 hidden md:flex">
               <div className="bg-white border-2 border-gray-100 text-black px-6 py-3 rounded-full shadow-xl flex items-center gap-3 translate-y-10">
                  <span className="text-xs font-black uppercase tracking-widest text-[#555555]">CHILL VIBES</span>
                  <Video size={14} className="text-[#6C5CE7]" />
