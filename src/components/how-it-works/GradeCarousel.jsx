@@ -2,31 +2,36 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Sparkles, MoveUpRight } from 'lucide-react';
 
+import asset_algo from '../../assets/asset_3d_algo.png';
+import asset_webdev from '../../assets/asset_3d_webdev.png';
+import asset_ielts from '../../assets/asset_3d_ielts.png';
+import asset_accounting from '../../assets/asset_3d_accounting.png';
+
 const GradeCarousel = () => {
   const cards = [
     { 
       title: 'Algorithm & DSA', 
       color: 'bg-[#FF72B4]', // Pinkish
       shadow: 'shadow-[#FF72B4]/40',
-      emoji: '🧮'
+      image: asset_algo
     },
     { 
       title: 'Web Dev', 
       color: 'bg-[#B097ED]', // Purple
       shadow: 'shadow-[#B097ED]/40',
-      emoji: '💻'
+      image: asset_webdev
     },
     { 
       title: 'IELTS Prep', 
       color: 'bg-[#6EDDF5]', // Cyan
       shadow: 'shadow-[#6EDDF5]/40',
-      emoji: '🌍'
+      image: asset_ielts
     },
     { 
       title: 'Accounting', 
       color: 'bg-[#FFAB5E]', // Orange
       shadow: 'shadow-[#FFAB5E]/40',
-      emoji: '📊'
+      image: asset_accounting
     },
   ];
 
@@ -121,9 +126,9 @@ const GradeCarousel = () => {
               whileHover={{ y: -8 }}
               className={`flex-shrink-0 w-48 h-48 md:w-[220px] md:h-[220px] rounded-[2.5rem] flex items-center justify-center snap-center shadow-xl ${card.color} ${card.shadow} relative overflow-hidden`}
             >
-              {/* Using native large emoji to mimic the colorful exactly-centered 3D icons from the UI */}
-              <div className="text-[80px] drop-shadow-2xl hover:scale-110 transition-transform duration-500">
-                {card.emoji}
+              {/* Realistic 3D floating icons imported successfully */}
+              <div className="w-full h-full flex items-center justify-center hover:scale-110 transition-transform duration-500 hover:brightness-110">
+                <img src={card.image} alt={card.title} className="w-[85%] h-[85%] object-contain drop-shadow-2xl" />
               </div>
               
               {/* Optional visually hidden text for screen readers */}
