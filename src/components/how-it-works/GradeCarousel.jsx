@@ -1,61 +1,151 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, BookOpen, Clock, MessageCircle, GraduationCap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, MoveUpRight } from 'lucide-react';
 
 const GradeCarousel = () => {
   const cards = [
-    { icon: <BookOpen className="w-12 h-12" />, color: 'bg-bento-yellow', title: 'Study Hub' },
-    { icon: <Clock className="w-12 h-12" />, color: 'bg-bento-blue', title: 'Timer Sync' },
-    { icon: <MessageCircle className="w-12 h-12" />, color: 'bg-bento-green', title: 'Live Chat' },
-    { icon: <GraduationCap className="w-12 h-12" />, color: 'bg-bento-lavender', title: 'Resource Share' },
+    { 
+      title: 'Algorithm & DSA', 
+      color: 'bg-[#FF72B4]', // Pinkish
+      shadow: 'shadow-[#FF72B4]/40',
+      emoji: '🧮'
+    },
+    { 
+      title: 'Web Dev', 
+      color: 'bg-[#B097ED]', // Purple
+      shadow: 'shadow-[#B097ED]/40',
+      emoji: '💻'
+    },
+    { 
+      title: 'IELTS Prep', 
+      color: 'bg-[#6EDDF5]', // Cyan
+      shadow: 'shadow-[#6EDDF5]/40',
+      emoji: '🌍'
+    },
+    { 
+      title: 'Accounting', 
+      color: 'bg-[#FFAB5E]', // Orange
+      shadow: 'shadow-[#FFAB5E]/40',
+      emoji: '📊'
+    },
   ];
 
   return (
-    <section className="px-6 md:px-12 py-32 bg-white max-w-7xl mx-auto w-full overflow-hidden">
-      <div className="relative mb-20 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-12">
-        <div className="relative">
-           {/* Decorative 4-point stars */}
-           <div className="absolute -top-10 -left-10 text-bento-yellow animate-float opacity-50">✦</div>
-           <div className="absolute top-1/2 -right-16 text-bento-blue animate-pulse opacity-40">✦</div>
-           
-           <h2 className="text-4xl md:text-7xl font-black font-heading leading-tight max-w-2xl">
-              Level Up Your <span className="relative inline-block px-10 py-2"><div className="absolute inset-0 bg-bento-lavender rounded-full -rotate-2 -z-10" />Grades</span> with Our Focus Rooms
-           </h2>
+    <section className="px-6 md:px-12 py-32 bg-white max-w-6xl mx-auto w-full relative overflow-visible flex flex-col items-center">
+      
+      {/* Top Right Label Pills */}
+      <div className="absolute top-10 right-0 md:right-10 flex flex-col items-end gap-2 z-10">
+        <div className="bg-[#8E78A6] text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-wide shadow-sm">
+          StudyBuddy App
         </div>
-        
-        <div className="flex flex-col items-center md:items-start gap-6">
-           <div className="flex items-center gap-3">
-              <span className="text-sm font-bold opacity-40 italic">With more than 2K+ students & 500+ study sessions.</span>
-              <button className="bg-white border border-gray-100 p-4 rounded-full shadow-lg hover:shadow-xl transition-all">
-                <span className="font-black text-xs uppercase tracking-widest flex items-center gap-2">Join us <div className="w-5 h-5 bg-black rounded-full text-white flex items-center justify-center -rotate-45">→</div></span>
-              </button>
-           </div>
-           
-           <div className="flex gap-4">
-              <button className="w-12 h-12 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center hover:bg-white transition-colors">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <button className="w-12 h-12 bg-white border border-gray-100 rounded-full flex items-center justify-center hover:shadow-lg transition-all">
-                <ArrowRight className="w-5 h-5" />
-              </button>
-           </div>
+        <div className="bg-[#8E78A6] text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-wide opacity-80 shadow-sm">
+          2026.11
         </div>
       </div>
 
-      <div className="flex -mx-4 gap-8 overflow-x-auto snap-x no-scrollbar md:pb-12">
-        {cards.map((card, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ scale: 1.02 }}
-            className={`flex-shrink-0 w-80 md:w-96 aspect-[4/3] ${card.color} squircle p-12 flex flex-col items-center justify-center gap-6 shadow-xl snap-center first:ml-4`}
-          >
-             <div className="w-24 h-24 bg-white/40 border border-white/50 rounded-[1.5rem] flex items-center justify-center text-black">
-                {card.icon}
-             </div>
-             <div className="text-2xl font-black font-heading tracking-widest uppercase italic">{card.title}</div>
-          </motion.div>
-        ))}
+      {/* Hero Text */}
+      <div className="text-center w-full max-w-4xl relative mt-16 mb-24">
+        
+        {/* Top Left Star */}
+        <div className="absolute top-0 left-[10%] text-[#8E78A6]">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+
+        {/* Top Right Star */}
+        <div className="absolute top-4 right-[15%] text-[#8E78A6]">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+
+        {/* Bottom Right Star */}
+        <div className="absolute -bottom-8 right-[10%] text-[#8E78A6]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+
+        <h2 className="text-5xl md:text-7xl lg:text-[80px] font-medium font-heading leading-tight tracking-tight text-[#333333]">
+          Level Up Your
+          <div className="flex items-center justify-center gap-4 mt-2">
+            Focus
+            {/* Orange Pill */}
+            <div className="bg-[#FFBE74] rounded-full px-8 py-3 flex items-center justify-center">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+              </svg>
+            </div>
+            with Our
+          </div>
+          <div className="relative inline-block mt-2">
+            {/* Swoosh Underline */}
+            <svg className="absolute -left-20 top-1/2 -translate-y-1/2 w-24 h-24 text-[#8E78A6]" viewBox="0 0 100 100" fill="none">
+              <path d="M90 60 Q40 80 10 40" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Study Class
+          </div>
+        </h2>
       </div>
+
+      {/* Info & CTA Row */}
+      <div className="w-full flex flex-col md:flex-row items-center justify-between px-4 md:px-12 mb-12 gap-8">
+        <div className="text-sm font-bold text-[#333333] leading-relaxed">
+          With more than<br />
+          2K + MEMBERS<br />
+          500 + TUTORIALS
+        </div>
+
+        <div className="flex items-center bg-white border-2 border-[#FFBE74] rounded-full p-1 pl-6 gap-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <span className="font-bold text-[#333333]">Join us</span>
+          <div className="w-10 h-10 bg-[#FFBE74] rounded-full flex items-center justify-center text-[#333333]">
+             <MoveUpRight className="w-5 h-5" />
+          </div>
+        </div>
+      </div>
+
+      {/* Carousel Area */}
+      <div className="w-full flex items-center justify-center gap-4 md:gap-8 relative px-4">
+        
+        {/* Left Arrow */}
+        <button className="hidden md:flex w-14 h-14 bg-[#D3C7EE] rounded-full items-center justify-center text-white hover:scale-105 transition-transform shrink-0">
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+
+        {/* Cards container */}
+        <div className="flex gap-6 md:gap-8 overflow-x-auto snap-x no-scrollbar py-8 px-4 w-full justify-start md:justify-center">
+          {cards.map((card, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -8 }}
+              className={`flex-shrink-0 w-48 h-48 md:w-[220px] md:h-[220px] rounded-[2.5rem] flex items-center justify-center snap-center shadow-xl ${card.color} ${card.shadow} relative overflow-hidden`}
+            >
+              {/* Using native large emoji to mimic the colorful exactly-centered 3D icons from the UI */}
+              <div className="text-[80px] drop-shadow-2xl hover:scale-110 transition-transform duration-500">
+                {card.emoji}
+              </div>
+              
+              {/* Optional visually hidden text for screen readers */}
+              <span className="sr-only">{card.title}</span>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Right Arrow */}
+        <button className="hidden md:flex w-14 h-14 bg-[#D3C7EE] rounded-full items-center justify-center text-white hover:scale-105 transition-transform shrink-0">
+          <ArrowRight className="w-6 h-6" />
+        </button>
+
+      </div>
+
+      {/* Bottom decorative star */}
+      <div className="absolute -bottom-10 right-[15%] text-[#8E78A6] opacity-60">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+        </svg>
+      </div>
+
     </section>
   );
 };
