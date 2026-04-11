@@ -65,10 +65,12 @@ const SocialProof = () => {
 
 export const TiltedCards = () => {
   const [cards, setCards] = React.useState([
-    { title: "CSE342 Data Structures", info: "5 Members - Focus Active", color: "bg-[#FFD6F3]", rotate: "-5deg" },
-    { title: "IELTS Speaking Practice", info: "8 Members - Live Sync", color: "bg-[#B8E1FF]", rotate: "2deg" },
-    { title: "SQL Midterm Prep", info: "12 Members - Resource Rich", color: "bg-[#FFEADB]", rotate: "-3deg" },
-    { title: "BBA Finance", info: "4 Members - Deep Focus", color: "bg-[#C1FF72]", rotate: "5deg" },
+    { title: "DSA", info: "12 Members - Focus Active", color: "bg-[#FFD6F3]", rotate: "-5deg" },
+    { title: "Web Dev", info: "8 Members - Live Sync", color: "bg-[#B8E1FF]", rotate: "2deg" },
+    { title: "IELTS", info: "15 Members - Speaking Prep", color: "bg-[#E0DAFF]", rotate: "-3deg" },
+    { title: "SQL Midterm", info: "10 Members - Resource Rich", color: "bg-[#FFEADB]", rotate: "5deg" },
+    { title: "Accounting Final", info: "20 Members - Deep Focus", color: "bg-[#E0DAFF]", rotate: "-2deg" },
+    { title: "Computer Network", info: "6 Members - Lab Prep", color: "bg-[#D6FFE4]", rotate: "4deg" },
   ]);
   const [loading, setLoading] = React.useState(true);
 
@@ -81,11 +83,11 @@ export const TiltedCards = () => {
             *,
             member_count:circle_members(count)
           `)
-          .limit(4);
+          .limit(6);
         
         if (data && data.length > 0) {
-          const colors = ["bg-[#FFD6F3]", "bg-[#B8E1FF]", "bg-[#FFEADB]", "bg-[#C1FF72]"];
-          const rotates = ["-5deg", "2deg", "-3deg", "5deg"];
+          const colors = ["bg-[#FFD6F3]", "bg-[#B8E1FF]", "bg-[#E0DAFF]", "bg-[#FFEADB]", "bg-[#E0DAFF]", "bg-[#D6FFE4]"];
+          const rotates = ["-5deg", "2deg", "-3deg", "5deg", "-2deg", "4deg"];
           
           const transformed = data.map((circle, i) => ({
             title: circle.name,

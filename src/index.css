@@ -62,7 +62,7 @@
 
 body {
   font-family: var(--font-body);
-  @apply bg-brand-beige text-brand-black antialiased overflow-x-hidden font-medium selection:bg-brand-lime;
+  @apply bg-brand-beige text-brand-black antialiased overflow-x-hidden font-medium selection:bg-brand-purple selection:text-white;
 }
 
 h1, h2, h3, h4, .font-heading {
@@ -155,17 +155,15 @@ h1, h2, h3, h4, .font-heading {
 }
 
 .sticker-shadow {
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 1);
 }
 
-.sticker-pill {
-  @apply bg-white border-2 border-black rounded-full px-4 py-2 flex items-center gap-2;
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+.sticker-shadow-sm {
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 1);
 }
 
-.sticker-circle {
-  @apply rounded-full border-2 border-black flex items-center justify-center;
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+.text-fluid-huge {
+  font-size: clamp(80px, 15vw, 240px);
 }
 
 .no-scrollbar::-webkit-scrollbar {

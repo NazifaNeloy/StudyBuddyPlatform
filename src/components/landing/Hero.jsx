@@ -5,12 +5,12 @@ import iphoneImg from '../../assets/iphone_15.png';
 
 const Hero = () => {
   const stickers = [
-    { type: 'circle', color: 'bg-[#C1FF72]', text: 'STUDY HARD', pos: 'top-[12%] left-[18%]', rotate: -18 },
-    { type: 'circle', color: 'bg-[#FFD6F3]', text: 'FOCUS NOW', pos: 'top-[20%] right-[15%]', rotate: 15 },
-    { type: 'circle', color: 'bg-[#FFF8D6]', text: 'ACE EXAMS', pos: 'bottom-[45%] left-[10%]', rotate: 10 },
-    { type: 'pill', icon: <Coffee size={18} />, label: 'Coffee Break', pos: 'top-[48%] left-[22%]', rotate: -8, color: 'bg-white' },
-    { type: 'pill', icon: <Book size={18} />, label: 'Exam Prep', pos: 'top-[65%] right-[22%]', rotate: 12, color: 'bg-white' },
-    { type: 'pill', icon: <Heart size={18} />, label: 'Group Study', pos: 'bottom-[35%] right-[28%]', rotate: -15, color: 'bg-white' },
+    { type: 'circle', color: 'bg-[#C1FF72]', text: 'STUDY HARD', pos: 'top-[8%] left-[12%]', rotate: -15, delay: 0 },
+    { type: 'circle', color: 'bg-[#FFD6F3]', text: 'FOCUS NOW', pos: 'top-[15%] right-[10%]', rotate: 20, delay: 0.2 },
+    { type: 'circle', color: 'bg-[#FFF8D6]', text: 'ACE EXAMS', pos: 'bottom-[15%] left-[8%]', rotate: 12, delay: 0.4 },
+    { type: 'pill', icon: <Heart size={18} />, label: 'Group Study', pos: 'top-[45%] right-[15%]', rotate: -12, delay: 0.6, color: 'bg-white' },
+    { type: 'pill', icon: <Coffee size={18} />, label: 'Coffee Break', pos: 'bottom-[25%] right-[12%]', rotate: 10, delay: 0.8, color: 'bg-white' },
+    { type: 'pill', icon: <Book size={18} />, label: 'Exam Prep', pos: 'bottom-[40%] left-[15%]', rotate: -8, delay: 1.0, color: 'bg-white' },
   ];
 
   return (
@@ -23,8 +23,21 @@ const Hero = () => {
             <motion.div
               key={i}
               initial={{ scale: 0, opacity: 0, rotate: 0 }}
-              animate={{ scale: 1, opacity: 1, rotate: s.rotate }}
-              transition={{ type: 'spring', delay: 0.5 + i * 0.1 }}
+              animate={{ 
+                scale: 1, 
+                opacity: 1, 
+                rotate: s.rotate,
+                y: [0, -10, 0] 
+              }}
+              transition={{ 
+                type: 'spring', 
+                delay: 0.2 + s.delay,
+                y: {
+                  duration: 3 + i,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              }}
               className={`absolute ${s.pos} z-10`}
             >
               {s.type === 'circle' ? (
@@ -53,7 +66,7 @@ const Hero = () => {
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 2, delay: 1 }}
-            className="absolute top-[28%] right-[28%] w-56 h-56 text-black opacity-40 -rotate-12"
+            className="absolute top-[20%] left-[25%] w-64 h-64 text-black opacity-30 -rotate-12 pointer-events-none"
             viewBox="0 0 100 100"
             fill="none"
           >
@@ -114,49 +127,50 @@ const Hero = () => {
         <div className="flex-1 relative flex flex-col items-start">
            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.25em] mb-4 block opacity-40 text-left">Your new study friend,</span>
            
-           <div className="relative inline-block">
-             <h1 className="text-[130px] md:text-[240px] leading-[0.8] font-black font-sans tracking-[-0.05em] text-black">
+          <div className="relative inline-block mt-4">
+             <h1 className="text-fluid-huge leading-[0.75] font-black font-sans tracking-[-0.06em] text-black">
                buddy
              </h1>
              {/* Underline on 'y' - Thick Black Horizontal Bar */}
-             <div className="absolute right-[0.05em] bottom-[0.05em] w-[0.45em] h-[18px] md:h-[35px] bg-black rounded-sm" />
+             <div className="absolute right-[0.04em] bottom-[0.12em] w-[0.42em] h-[15px] md:h-[30px] bg-black rounded-sm" />
              
-             {/* App Icon Square - Overlapping bottom right as per UI */}
+             {/* App Icon Square - Overlapping bottom right with better offset */}
              <motion.div 
-               whileHover={{ scale: 1.05, rotate: 3 }}
-               className="absolute bottom-[-15px] right-[-10px] md:bottom-[-25px] md:right-[-15px] w-24 h-24 md:w-52 md:h-52 bg-[#E0DAFF] rounded-[2rem] md:rounded-[4rem] flex items-center justify-center border-4 md:border-[10px] border-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-20"
+               whileHover={{ scale: 1.05, rotate: 2 }}
+               className="absolute bottom-[-15px] right-[-15px] md:bottom-[-60px] md:right-[-50px] w-20 h-20 md:w-56 md:h-56 bg-brand-lavender rounded-[1.5rem] md:rounded-[4rem] flex items-center justify-center border-4 md:border-[12px] border-white shadow-2xl z-30"
              >
-               <span className="text-2xl md:text-6xl font-black text-white lowercase">buddy</span>
+               <span className="text-xl md:text-6xl font-black text-white lowercase">buddy</span>
              </motion.div>
            </div>
         </div>
 
         {/* 3. Technical Metadata Column (Right Side) */}
-        <div className="w-full md:w-72 pt-32 text-left">
-           <div className="space-y-4 mb-20">
-              <div className="text-[10px] font-black uppercase tracking-[0.2em] mb-4">Project</div>
+        <div className="w-full md:w-72 pt-12 md:pt-48 text-left border-black/5">
+           <div className="space-y-4 mb-24">
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 opacity-40">Project Overview</div>
               {[
-                'Location/Bangladesh',
-                'Project/StudyBuddy',
-                'Date/2026',
-              ].map((text, i) => (
-                <div key={i} className="text-xs md:text-sm font-bold opacity-50 uppercase tracking-tight">
-                  {text}
+                { label: 'Location', val: 'Bangladesh' },
+                { label: 'Project', val: 'StudyBuddy' },
+                { label: 'Release', val: 'Spring 2026' },
+              ].map((item, i) => (
+                <div key={i} className="flex justify-between items-center text-[11px] md:text-xs font-bold uppercase tracking-widest border-b border-black/5 pb-2">
+                  <span className="opacity-30">{item.label}</span>
+                  <span className="text-black">{item.val}</span>
                 </div>
               ))}
            </div>
 
-           <div className="max-w-[220px]">
-             <p className="text-xs md:text-base font-bold leading-relaxed opacity-50 italic tracking-tight">
-               "We provide an extensive array of collaborative tools for students worldwide."
+           <div className="max-w-[240px] border-l-2 border-brand-lime pl-6 py-2">
+             <p className="text-sm md:text-base font-bold leading-snug text-black/40 italic tracking-tight">
+               "Empowering collaborative growth through localized toolsets."
              </p>
            </div>
         </div>
       </section>
 
       {/* 4. The Footer Description (Bottom) */}
-      <section className="bg-white pb-48 px-6 md:px-12 max-w-5xl mx-auto w-full">
-         <p className="text-2xl md:text-4xl leading-[1.25] font-bold text-left text-black/60 tracking-tight">
+      <section className="bg-white pb-64 px-6 md:px-12 max-w-7xl mx-auto w-full">
+         <p className="text-2xl md:text-[52px] leading-[1.05] font-black text-left text-black/10 tracking-[-0.03em] max-w-4xl hover:text-black/80 transition-colors duration-700">
             Streamline your academic journey with our app, offering seamless session booking, personalized resource recommendations, and real-time updates for hassle-free learning across the country.
          </p>
       </section>
