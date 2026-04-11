@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, MessageCircle, Instagram } from 'lucide-react';
+import { Mail, MessageCircle, Globe } from 'lucide-react';
 
 const CommunityBanner = () => {
   return (
@@ -55,7 +55,7 @@ const CommunityBanner = () => {
           <div className="flex-1 flex justify-center gap-6">
             <Mail className="w-5 h-5 stroke-[1.5]" />
             <MessageCircle className="w-5 h-5 stroke-[1.5]" />
-            <Instagram className="w-5 h-5 stroke-[1.5]" />
+            <Globe className="w-5 h-5 stroke-[1.5]" />
           </div>
 
           <div className="flex-1 text-center md:text-right">
