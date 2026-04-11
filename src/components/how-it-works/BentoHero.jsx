@@ -10,7 +10,7 @@ import asset_nusrat from '../../assets/asset_nusrat.png';
 
 const BentoHero = () => {
   return (
-    <section className="px-6 md:px-12 pt-16 pb-32 max-w-[1400px] mx-auto w-full bg-[#FDFCF8]">
+    <section className="px-6 md:px-12 pt-16 pb-12 md:pb-16 max-w-[1400px] mx-auto w-full bg-[#FDFCF8]">
       
       {/* Header Section */}
       <div className="text-center mb-16">

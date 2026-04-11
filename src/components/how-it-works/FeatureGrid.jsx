@@ -11,7 +11,7 @@ const FeatureGrid = () => {
   ];
 
   return (
-    <section className="px-6 md:px-12 py-32 bg-white max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-20 items-center overflow-hidden">
+    <section className="px-6 md:px-12 pt-12 md:pt-16 pb-4 bg-white max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-20 items-center overflow-hidden">
       <div>
          <h2 className="text-4xl md:text-7xl font-black font-heading leading-[1.05] tracking-tighter mb-8">
             How To Build The<br />Perfect Study Routine

@@ -10,7 +10,7 @@ import asset_boy from '../../assets/asset_hero_boy.png';
 
 const GradeCarousel = () => {
   return (
-    <section className="px-6 md:px-12 py-32 bg-white max-w-7xl mx-auto w-full relative overflow-hidden flex flex-col items-center">
+    <section className="px-6 md:px-12 py-12 md:py-16 bg-white max-w-7xl mx-auto w-full relative overflow-hidden flex flex-col items-center">
       
       {/* Subtle Background Radial Glow */}
       <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-pink-100/40 rounded-full blur-[100px] -z-10" />
@@ -53,36 +53,52 @@ const GradeCarousel = () => {
       <motion.button 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="bg-black text-white px-10 py-5 rounded-full font-bold text-lg shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-20 mb-20"
+        className="bg-black text-white px-10 py-5 rounded-full font-bold text-lg shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-20 mb-8"
       >
         Get Instant Access
       </motion.button>
 
       {/* Bottom Mockup & Floating Cards Area */}
-      <div className="relative w-full max-w-5xl mx-auto flex justify-center mt-12 h-[500px]">
+      <div className="relative w-full max-w-5xl mx-auto flex justify-center mt-4 h-[500px]">
         
-        {/* Center Phone Mockup */}
-        <div className="relative z-20 w-[280px] md:w-[320px] h-[600px]">
-          <img src={iphoneImg} alt="App Interface" className="w-full h-full object-cover drop-shadow-2xl" />
-          
-          {/* Mock Inner Screen (Bar Chart) */}
-          <div className="absolute top-[3%] left-[4.5%] right-[4.5%] bottom-[4%] bg-white rounded-[2.5rem] -z-10 overflow-hidden flex flex-col pt-16 px-6">
-            <div className="w-full flex items-end justify-between h-48 gap-3 mt-10">
-               <div className="w-full bg-pink-200 rounded-t-md h-[40%]" />
-               <div className="w-full bg-pink-200 rounded-t-md h-[70%]" />
-               <div className="w-full bg-pink-200 rounded-t-md h-[30%]" />
-               <div className="w-full bg-pink-200 rounded-t-md h-[80%]" />
-               <div className="w-full bg-pink-200 rounded-t-md h-[55%]" />
-            </div>
-            {/* Chart line overlay */}
-            <svg className="absolute top-[30%] left-0 w-full h-[30%] text-pink-400 opacity-70" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M10,20 L30,80 L50,60 L70,90 L90,30" />
-              <circle cx="10" cy="20" r="2" fill="white" strokeWidth="2"/>
-              <circle cx="30" cy="80" r="2" fill="white" strokeWidth="2"/>
-              <circle cx="50" cy="60" r="2" fill="white" strokeWidth="2"/>
-              <circle cx="70" cy="90" r="2" fill="white" strokeWidth="2"/>
-              <circle cx="90" cy="30" r="2" fill="white" strokeWidth="2"/>
-            </svg>
+        {/* Center Descriptive Anchor Card */}
+        <div className="relative z-20 w-[280px] md:w-[320px] h-[500px] mt-10">
+          <div className="w-full h-full bg-white border border-gray-100 rounded-[3rem] shadow-2xl p-8 flex flex-col items-center justify-between relative overflow-hidden">
+             
+             {/* Decorative Background Ring */}
+             <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[250px] h-[250px] border-[30px] border-pink-50 rounded-full -z-10" />
+
+             <div className="text-center mt-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner border border-white">
+                  🔥
+                </div>
+                <h3 className="text-2xl font-black font-heading text-gray-800">Your 30-Day<br/>Masterplan</h3>
+                <p className="text-gray-400 text-sm mt-3 font-medium">Build an unbreakable focus streak</p>
+             </div>
+
+             {/* Mock Progress UI */}
+             <div className="w-full bg-gray-50 rounded-3xl p-6 mt-8 flex-1 flex flex-col justify-center border border-gray-100">
+                <div className="flex justify-between items-end mb-4">
+                   <div className="flex flex-col gap-1">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Target</span>
+                      <span className="text-xl font-black">100 hrs</span>
+                   </div>
+                   <div className="w-12 h-12 rounded-full border-4 border-black/5 flex items-center justify-center text-xs font-bold text-gray-400">
+                      80%
+                   </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden mt-2">
+                   <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: '80%' }}
+                      transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+                      className="h-full bg-black rounded-full"
+                   />
+                </div>
+             </div>
+
           </div>
         </div>
 
