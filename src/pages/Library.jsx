@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Layout from '../components/Layout';
+import toast from 'react-hot-toast';
 
 // Modular Architecture Imports
 import LibraryHero from '../components/library/LibraryHero';
@@ -140,7 +141,7 @@ const Library = ({ circleId: propCircleId }) => {
         </div>
         
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <div className="flex-1 md:w-64 bg-surface-container-high rounded-full px-6 py-3 flex items-center gap-3 border border-black/5 shadow-sm">
+          <div className="flex-1 md:w-64 bg-surface-container-high rounded-full px-6 py-3 flex items-center gap-3 border border-outline-variant/10 shadow-sm">
             <span className="material-symbols-outlined text-outline text-xl">search</span>
             <input 
               type="text" 
@@ -152,7 +153,7 @@ const Library = ({ circleId: propCircleId }) => {
           </div>
           
           <div className="flex items-center gap-3">
-             <button className="p-3 rounded-2xl bg-white border border-black/5 shadow-ref-sm text-primary hover:scale-110 active:scale-95 transition-all">
+             <button className="p-3 rounded-2xl bg-white border border-outline-variant/10 shadow-ref-sm text-primary hover:scale-110 active:scale-95 transition-all">
                 <span className="material-symbols-outlined">notifications</span>
              </button>
              <div className="w-12 h-12 rounded-full border-2 border-primary-container p-0.5 overflow-hidden shadow-ref-sm">
@@ -208,7 +209,7 @@ const Library = ({ circleId: propCircleId }) => {
               
               {filteredResources.length === 0 && !loading && (
                 <div className="col-span-full py-32 text-center bg-surface-container-low rounded-[3rem] border-4 border-dashed border-outline-variant/10 flex flex-col items-center justify-center space-y-6">
-                   <div className="w-16 h-16 bg-white/50 rounded-3xl flex items-center justify-center text-outline-variant opacity-30">
+                   <div className="w-16 h-16 bg-surface-container/50 rounded-3xl flex items-center justify-center text-outline-variant opacity-30">
                       <span className="material-symbols-outlined text-4xl">folder_off</span>
                    </div>
                    <div>

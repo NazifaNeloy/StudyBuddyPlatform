@@ -20,9 +20,11 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import Layout from '../components/Layout';
+import { useTheme } from '../context/ThemeContext';
 
 const Settings = () => {
   const { user, refreshProfile } = useAuth();
+  const { theme, setTheme: globalSetTheme } = useTheme();
   const [profile, setProfile] = useState({
     full_name: '',
     email: '',
@@ -70,11 +72,6 @@ const Settings = () => {
         // Apply theme/accent immediately
         if (data.accent_color) {
            document.documentElement.style.setProperty('--color-brand-purple', getHexColor(data.accent_color));
-        }
-        if (data.interface_mode === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
         }
       }
     } catch (err) {
@@ -206,13 +203,13 @@ const Settings = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           
           {/* Profile Management Card */}
-          <section className="md:col-span-12 lg:col-span-8 bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-black/5 relative overflow-hidden">
+          <section className="md:col-span-12 lg:col-span-8 bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-outline-variant/10 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5">
                <User size={80} />
             </div>
             
             <div className="flex items-center gap-4 mb-10">
-              <div className="w-12 h-12 bg-pastel-purple rounded-2xl flex items-center justify-center text-brand-purple shadow-sm border border-black/5">
+              <div className="w-12 h-12 bg-pastel-purple rounded-2xl flex items-center justify-center text-brand-purple shadow-sm border border-outline-variant/10">
                  <User size={24} />
               </div>
               <h2 className="text-2xl font-heading font-black italic uppercase tracking-tighter text-on-surface">Profile Management</h2>
@@ -252,37 +249,35 @@ const Settings = () => {
                 >
                   <Camera size={18} />
                 </button>
-              </div>
-
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant ml-2 opacity-60">Full Name</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-on-surface ml-2 opacity-40">Full Name</label>
                   <input 
-                    className="w-full bg-gray-50 border border-black/5 rounded-full px-8 py-5 focus:ring-2 focus:ring-brand-purple/40 text-on-surface font-black italic tracking-tighter text-lg outline-none transition-all" 
+                    className="w-full bg-surface-container border border-outline-variant/10 rounded-full px-8 py-5 focus:ring-2 focus:ring-brand-purple/40 text-on-surface font-black italic tracking-tighter text-lg outline-none transition-all" 
                     type="text" 
                     value={profile.full_name}
                     onChange={(e) => setProfile({...profile, full_name: e.target.value})}
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant ml-2 opacity-60">Email Address</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-on-surface ml-2 opacity-40">Email Address</label>
                   <input 
-                    className="w-full bg-gray-50 border border-black/5 rounded-full px-8 py-5 focus:ring-2 focus:ring-brand-purple/40 text-on-surface font-black italic tracking-tighter text-lg outline-none transition-all opacity-60" 
+                    className="w-full bg-surface-container border border-outline-variant/10 rounded-full px-8 py-5 focus:ring-2 focus:ring-brand-purple/40 text-on-surface font-black italic tracking-tighter text-lg outline-none transition-all opacity-40" 
                     type="email" 
                     value={profile.email} 
                     disabled 
                   />
                 </div>
                 <div className="space-y-3 md:col-span-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant ml-2 opacity-60">Major / Domain</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-on-surface ml-2 opacity-40">Major / Domain</label>
                   <input 
-                    className="w-full bg-gray-50 border border-black/5 rounded-full px-8 py-5 focus:ring-2 focus:ring-brand-purple/40 text-on-surface font-black italic tracking-tighter text-lg outline-none transition-all" 
+                    className="w-full bg-surface-container border border-outline-variant/10 rounded-full px-8 py-5 focus:ring-2 focus:ring-brand-purple/40 text-on-surface font-black italic tracking-tighter text-lg outline-none transition-all" 
                     type="text" 
                     value={profile.major}
                     onChange={(e) => setProfile({...profile, major: e.target.value})}
                   />
                 </div>
-              </div>
+              </div>  </div>
             </div>
 
             <div className="mt-12 flex justify-end">
@@ -298,9 +293,9 @@ const Settings = () => {
 
           {/* Appearance Card */}
           <section className="md:col-span-12 lg:col-span-4 space-y-8">
-            <div className="bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-black/5">
+            <div className="bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-outline-variant/10">
               <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 bg-pastel-yellow rounded-2xl flex items-center justify-center text-orange-600 shadow-sm border border-black/5">
+                <div className="w-12 h-12 bg-pastel-yellow rounded-2xl flex items-center justify-center text-orange-600 shadow-sm border border-outline-variant/10">
                   <Palette size={24} />
                 </div>
                 <h2 className="text-2xl font-heading font-black italic uppercase tracking-tighter">Appearance</h2>
@@ -311,23 +306,17 @@ const Settings = () => {
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-on-surface-variant opacity-60">Interface Mode</p>
                   <div className="grid grid-cols-2 gap-4">
                     <button 
-                      onClick={() => {
-                        setProfile({...profile, interface_mode: 'light'});
-                        document.documentElement.classList.remove('dark');
-                      }}
-                      className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all ${profile.interface_mode === 'light' ? 'bg-white border-brand-purple shadow-ref-sm' : 'bg-gray-50 border-transparent opacity-60'}`}
+                      onClick={() => globalSetTheme('light')}
+                      className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all ${theme === 'light' ? 'bg-surface border-brand-purple shadow-ref-sm' : 'bg-surface-container-low border-transparent opacity-60'}`}
                     >
-                      <Sun className={profile.interface_mode === 'light' ? 'text-brand-purple' : 'text-gray-400'} size={32} />
+                      <Sun className={theme === 'light' ? 'text-brand-purple' : 'text-gray-400'} size={32} />
                       <span className="text-[10px] font-black uppercase tracking-widest">Atheneum</span>
                     </button>
                     <button 
-                      onClick={() => {
-                        setProfile({...profile, interface_mode: 'dark'});
-                        document.documentElement.classList.add('dark');
-                      }}
-                      className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all ${profile.interface_mode === 'dark' ? 'bg-white border-brand-purple shadow-ref-sm' : 'bg-gray-50 border-transparent opacity-60'}`}
+                      onClick={() => globalSetTheme('dark')}
+                      className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] border-4 transition-all ${theme === 'dark' ? 'bg-surface border-brand-purple shadow-ref-sm' : 'bg-surface-container-low border-transparent opacity-60'}`}
                     >
-                      <Moon className={profile.interface_mode === 'dark' ? 'text-brand-purple' : 'text-gray-400'} size={32} />
+                      <Moon className={theme === 'dark' ? 'text-brand-purple' : 'text-gray-400'} size={32} />
                       <span className="text-[10px] font-black uppercase tracking-widest">Oblivion</span>
                     </button>
                   </div>
@@ -373,9 +362,9 @@ const Settings = () => {
           </section>
 
           {/* Notifications Card */}
-          <section className="md:col-span-12 lg:col-span-6 bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-black/5">
+          <section className="md:col-span-12 lg:col-span-6 bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-outline-variant/10">
             <div className="flex items-center gap-4 mb-10">
-              <div className="w-12 h-12 bg-pastel-blue rounded-2xl flex items-center justify-center text-blue-600 shadow-sm border border-black/5">
+              <div className="w-12 h-12 bg-pastel-blue rounded-2xl flex items-center justify-center text-blue-600 shadow-sm border border-outline-variant/10">
                 <Bell size={24} />
               </div>
               <h2 className="text-2xl font-heading font-black italic uppercase tracking-tighter">Transmissions</h2>
@@ -396,7 +385,7 @@ const Settings = () => {
                         [key]: !val
                       }
                     })}
-                    className={`w-16 h-9 rounded-full border border-black/5 cursor-pointer transition-all p-1.5 relative flex items-center ${val ? 'bg-pastel-green' : 'bg-gray-100'}`}
+                    className={`w-16 h-9 rounded-full border border-outline-variant/10 cursor-pointer transition-all p-1.5 relative flex items-center ${val ? 'bg-pastel-green' : 'bg-gray-100'}`}
                   >
                     <motion.div 
                       animate={{ x: val ? 28 : 0 }}
@@ -409,18 +398,18 @@ const Settings = () => {
           </section>
 
           {/* Security Card */}
-          <section className="md:col-span-12 lg:col-span-6 bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-black/5">
+          <section className="md:col-span-12 lg:col-span-6 bg-white p-10 rounded-[2.5rem] shadow-ref-xl border border-outline-variant/10">
             <div className="flex items-center gap-4 mb-10">
-              <div className="w-12 h-12 bg-pastel-pink rounded-2xl flex items-center justify-center text-red-600 shadow-sm border border-black/5">
+              <div className="w-12 h-12 bg-pastel-pink rounded-2xl flex items-center justify-center text-red-600 shadow-sm border border-outline-variant/10">
                  <Lock size={24} />
               </div>
               <h2 className="text-2xl font-heading font-black italic uppercase tracking-tighter">Security Layers</h2>
             </div>
 
             <div className="space-y-4">
-              <button className="w-full flex items-center justify-between p-6 rounded-[2rem] bg-gray-50 hover:bg-white border border-transparent hover:border-black/5 transition-all text-left group">
+              <button className="w-full flex items-center justify-between p-6 rounded-[2rem] bg-gray-50 hover:bg-white border border-transparent hover:border-outline-variant/10 transition-all text-left group">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-black/5 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-outline-variant/10 shadow-sm">
                     <Lock size={18} className="text-gray-400" />
                   </div>
                   <div>
@@ -433,7 +422,7 @@ const Settings = () => {
               
               <div className="flex items-center justify-between p-6 rounded-[2rem] bg-gray-50 border border-transparent">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-black/5 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-outline-variant/10 shadow-sm">
                      <ShieldCheck size={18} className="text-brand-purple" />
                   </div>
                   <div>
@@ -460,14 +449,14 @@ const Settings = () => {
             </div>
 
             <div className="flex flex-col md:flex-row gap-8">
-              <div className="flex-1 p-8 bg-white/60 backdrop-blur-sm rounded-[2rem] border border-red-200 group">
+              <div className="flex-1 p-8 bg-surface-container/60 backdrop-blur-sm rounded-[2rem] border border-red-200 group">
                 <h3 className="font-heading font-black italic text-xl uppercase tracking-tighter mb-2">Export Data Stream</h3>
                 <p className="text-xs font-bold text-gray-400 mb-6 leading-relaxed italic">Download a neural archive of all your study groups, vaults, and transmissions.</p>
                 <button className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-widest text-[10px] hover:translate-x-1 transition-transform">
                   <Download size={16} /> Request Archive
                 </button>
               </div>
-              <div className="flex-1 p-8 bg-white/60 backdrop-blur-sm rounded-[2rem] border border-red-200">
+              <div className="flex-1 p-8 bg-surface-container/60 backdrop-blur-sm rounded-[2rem] border border-red-200">
                 <h3 className="font-heading font-black italic text-xl uppercase tracking-tighter text-red-600 mb-2">Delete Protocol</h3>
                 <p className="text-xs font-bold text-gray-400 mb-6 leading-relaxed italic">Permanently terminate your session and erase all associated artifacts. Irreversible.</p>
                 <button className="bg-red-600 text-white font-heading font-black uppercase italic tracking-tighter px-10 py-4 rounded-full hover:bg-red-700 transition-all active:scale-95 shadow-lg shadow-red-600/20">Purge Forever</button>

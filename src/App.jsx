@@ -23,15 +23,17 @@ import PartnerChat from './pages/PartnerChat';
 import Notifications from './pages/Notifications';
 
 
+import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
-      <FocusProvider>
-        <Toaster position="top-right" />
-        <Router>
-          <ErrorBoundary>
+      <ThemeProvider>
+        <FocusProvider>
+          <Toaster position="top-right" />
+          <Router>
+            <ErrorBoundary>
             <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
@@ -151,8 +153,9 @@ function App() {
           </Routes>
           </ErrorBoundary>
         </Router>
-      </FocusProvider>
-    </AuthProvider>
+          </FocusProvider>
+        </ThemeProvider>
+      </AuthProvider>
   );
 }
 

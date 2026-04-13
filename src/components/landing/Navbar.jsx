@@ -10,7 +10,12 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between px-6 md:px-12 py-8 bg-transparent max-w-7xl mx-auto w-full z-50">
       <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.href = '/'}>
-        <span className="text-2xl font-black font-sans tracking-tight text-brand-black lowercase">buddy</span>
+        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow-ref-sm">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
+        </div>
+        <div>
+          <h1 className="text-xl font-black text-primary font-headline tracking-tighter leading-none">StudyBuddy</h1>
+        </div>
       </div>
 
       <div className="hidden md:flex items-center gap-10">

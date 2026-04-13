@@ -150,9 +150,9 @@ const Dashboard = () => {
 
   if (!isAuthReady || loading) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-brand-white z-[9999]">
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background z-[9999]">
         <div className="w-16 h-16 border-8 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse italic">Synchronizing Neural Data...</p>
+        <p className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-primary animate-pulse italic">Synchronizing Neural Protocols...</p>
       </div>
     );
   }
@@ -164,11 +164,11 @@ const Dashboard = () => {
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h2 className="text-3xl font-black font-headline tracking-tighter uppercase italic text-primary">Dashboard</h2>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60">Neural Protocol Monitor</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface opacity-40">Neural Protocol Monitor</p>
         </div>
         
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <div className="flex-1 md:w-64 bg-surface-container-high rounded-full px-6 py-3 flex items-center gap-3 border border-black/5 shadow-sm">
+          <div className="flex-1 md:w-64 bg-surface-container-high rounded-full px-6 py-3 flex items-center gap-3 border border-outline-variant/10 shadow-sm">
             <span className="material-symbols-outlined text-outline text-xl">search</span>
             <input 
               type="text" 
@@ -182,7 +182,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-3">
              <button 
               onClick={() => navigate('/notifications')}
-              className="p-3 rounded-2xl bg-white border border-black/5 shadow-ref-sm text-primary hover:scale-110 active:scale-95 transition-all"
+              className="p-3 rounded-2xl bg-white border border-outline-variant/10 shadow-ref-sm text-primary hover:scale-110 active:scale-95 transition-all"
              >
                 <span className="material-symbols-outlined">notifications</span>
              </button>
@@ -228,11 +228,11 @@ const Dashboard = () => {
 
         {/* Right Column: Temporal & AI Intelligence */}
         <div className="space-y-10">
-          <section className="bg-white/50 p-6 rounded-2xl border border-black/5">
+          <section className="bg-surface-container/50 p-6 rounded-2xl border border-outline-variant/10">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">Academic Focus</h3>
             <div className="flex flex-wrap gap-2">
               {profileData?.interests?.map(interest => (
-                <span key={interest} className="px-3 py-1.5 bg-pastel-pink rounded-xl text-[10px] font-bold text-brand-black border border-black/5 shadow-sm">
+                <span key={interest} className="px-3 py-1.5 bg-pastel-pink rounded-xl text-[10px] font-bold text-brand-black border border-outline-variant/10 shadow-sm">
                   {interest}
                 </span>
               )) || <p className="text-[10px] opacity-40 italic">No interests detected.</p>}

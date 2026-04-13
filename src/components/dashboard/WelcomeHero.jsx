@@ -6,17 +6,17 @@ const WelcomeHero = ({ userName, streak, focusHours }) => {
     <section className="relative bg-gradient-to-r from-primary to-primary-dim rounded-xl p-8 md:p-12 overflow-hidden shadow-2xl">
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-end md:items-center gap-8">
         <div className="max-w-2xl">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-on-primary font-headline tracking-tighter mb-4 leading-tight">
-            Hey {userName || 'Scholar'}! Ready to crush your <span className="text-tertiary-fixed underline decoration-tertiary-fixed/30 underline-offset-8">Neural Protocols</span> today?
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white font-headline tracking-tighter mb-4 leading-tight">
+            Hey {userName || 'Scholar'}! Ready to crush your <span className="text-brand-lime underline decoration-brand-lime/30 underline-offset-8">Neural Protocols</span> today?
           </h2>
           <div className="flex flex-wrap gap-4 mt-6">
-            <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20">
-              <p className="text-xs font-label uppercase text-on-primary/70 tracking-widest font-bold">Study Streak</p>
-              <p className="text-2xl font-headline font-black text-tertiary-fixed">{streak || 0} Days</p>
+            <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 hover:scale-105 transition-transform">
+              <p className="text-xs font-label uppercase text-white/70 tracking-widest font-bold">Study Streak</p>
+              <p className="text-2xl font-headline font-black text-brand-lime">{streak || 0} Days</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20">
-              <p className="text-xs font-label uppercase text-on-primary/70 tracking-widest font-bold">Focus Hours</p>
-              <p className="text-2xl font-headline font-black text-secondary-fixed">{focusHours || 0}h</p>
+            <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 hover:scale-105 transition-transform">
+              <p className="text-xs font-label uppercase text-white/70 tracking-widest font-bold">Focus Hours</p>
+              <p className="text-2xl font-headline font-black text-brand-skyblue">{focusHours || 0}h</p>
             </div>
           </div>
         </div>
@@ -29,7 +29,7 @@ const WelcomeHero = ({ userName, streak, focusHours }) => {
               className="w-[80%] h-[80%] opacity-40 animate-float" 
             />
           </div>
-          <div className="absolute -top-4 -right-4 bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg animate-bounce">
+          <div className="absolute -top-4 -right-4 bg-brand-lime text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg animate-bounce">
             Active Now
           </div>
         </div>

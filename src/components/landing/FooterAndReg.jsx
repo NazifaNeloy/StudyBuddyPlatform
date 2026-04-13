@@ -34,7 +34,7 @@ export const Footer = () => {
   return (
     <footer className="bg-black text-white py-20 md:py-40 px-6 md:px-12 text-center relative overflow-hidden flex flex-col items-center justify-center">
       <div className="absolute top-10 flex items-center gap-2 opacity-50">
-        <span className="text-xl font-black font-heading tracking-tight italic">StudyBuddy</span>
+        <span className="text-xl font-black font-heading tracking-tighter italic">StudyBuddy</span>
       </div>
       
       <div className="relative z-10 w-full">

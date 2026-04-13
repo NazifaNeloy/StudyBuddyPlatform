@@ -8,7 +8,7 @@ import CommunityHero from '../components/landing/CommunityHero';
 
 const LandingPage = () => {
   return (
-    <div className="bg-white min-h-screen text-brand-black overflow-x-hidden">
+    <div className="bg-background text-on-surface transition-colors duration-300">
       <Navbar />
       
       {/* 1. Community Bento Section */}
@@ -24,7 +24,7 @@ const LandingPage = () => {
         <div id="leaderboard"><TypographyBreak /></div>
         <AppShowcase />
         {/* 2. Social Proof / Testimonials moved here */}
-        <div id="about" className="bg-[#F8F9FA] py-20 px-6 md:px-12">
+        <div id="about" className="bg-surface-container-low transition-colors duration-300 py-20 px-6 md:px-12">
           <SocialProof />
         </div>
 

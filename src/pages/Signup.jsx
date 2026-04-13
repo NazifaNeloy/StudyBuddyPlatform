@@ -108,7 +108,7 @@ const Signup = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-bento-white flex flex-col selection:bg-brand-purple selection:text-white">
+      <div className="min-h-screen bg-background flex flex-col selection:bg-brand-purple selection:text-white">
         <Navbar />
         <div className="flex-1 flex items-center justify-center p-4">
           <motion.div 
@@ -139,7 +139,7 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-bento-white flex flex-col selection:bg-brand-purple selection:text-white">
+    <div className="min-h-screen bg-background flex flex-col selection:bg-brand-purple selection:text-white">
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">

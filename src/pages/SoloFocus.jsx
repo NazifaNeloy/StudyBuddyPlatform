@@ -51,7 +51,7 @@ const SoloFocus = () => {
       <div className="max-w-4xl mx-auto space-y-10 pb-20">
         <div className="flex items-center justify-between">
           <Link to="/focus" className="flex items-center gap-3 text-gray-400 hover:text-brand-purple transition-all font-black uppercase italic tracking-tighter group">
-            <div className="p-3 rounded-2xl border border-black/5 bg-white group-hover:scale-110 transition-all shadow-ref text-brand-black">
+            <div className="p-3 rounded-2xl border-outline-variant/10 bg-surface transition-colors duration-300 shadow-ref text-on-surface">
               <ChevronLeft size={22} />
             </div>
             Leave Protocol
@@ -111,7 +111,7 @@ const SoloFocus = () => {
                 whileHover={{ scale: 1.1, rotate: -10 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={resetSession}
-                className="w-20 h-20 rounded-full border border-black/5 bg-white shadow-ref flex items-center justify-center hover:bg-gray-50 transition-all text-brand-black"
+                className="w-20 h-20 rounded-full border-outline-variant/10 bg-surface transition-colors duration-300 shadow-ref flex items-center justify-center hover:bg-surface-container-high text-on-surface"
               >
                 <RotateCcw size={32} />
               </motion.button>
@@ -120,8 +120,8 @@ const SoloFocus = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleTimer}
-                className={`w-32 h-32 rounded-full border border-black/5 shadow-ref-xl flex items-center justify-center transition-all ${
-                  isActive ? 'bg-white text-brand-black' : 'bg-brand-black text-white'
+                className={`w-32 h-32 rounded-full border-outline-variant/10 transition-colors duration-300 shadow-ref-xl flex items-center justify-center transition-all ${
+                  isActive ? 'bg-surface text-on-surface font-black' : 'bg-brand-black text-white'
                 }`}
               >
                 {isActive ? <Pause size={56} fill="currentColor" /> : <Play size={56} fill="currentColor" className="ml-2" />}
@@ -133,7 +133,7 @@ const SoloFocus = () => {
 
           {/* Settings/Stats Column */}
           <div className="space-y-6">
-            <div className="bg-white border border-black/5 rounded-[2.5rem] shadow-ref-xl p-10 space-y-8">
+            <div className="bg-surface border-outline-variant/10 shadow-ref-xl transition-colors duration-300">
               <h3 className="text-3xl font-heading font-black italic tracking-tighter uppercase text-brand-black">Mission Control</h3>
               <div className="grid grid-cols-1 gap-4">
                 {Object.entries(modes).map(([key, m]) => (
@@ -157,12 +157,12 @@ const SoloFocus = () => {
 
             <div className="grid grid-cols-2 gap-4">
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-pastel-yellow border border-black/5 rounded-[2rem] shadow-ref-xl p-8 text-center">
+              <div className="bg-pastel-yellow border-outline-variant/10 shadow-ref-xl p-8 text-center transition-colors duration-300">
                  <Flame className="mx-auto mb-3 text-orange-600" size={32} />
                  <div className="text-4xl font-heading font-black italic tracking-tighter">{sessionsCompleted}</div>
                  <div className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 mt-1">Sessions Today</div>
               </div>
-              <div className="bg-pastel-pink border border-black/5 rounded-[2rem] shadow-ref-xl p-8 text-center">
+              <div className="bg-pastel-pink border-outline-variant/10 shadow-ref-xl p-8 text-center transition-colors duration-300">
                  <Star className="mx-auto mb-3 text-pink-600" size={32} />
                  <div className="text-4xl font-heading font-black italic tracking-tighter">{sessionsCompleted * 50}</div>
                  <div className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 mt-1">Global XP</div>
@@ -182,7 +182,7 @@ const SoloFocus = () => {
             exit={{ opacity: 0, scale: 0.5, y: -50 }}
             className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200]"
           >
-             <div className="bg-white border border-black/5 rounded-full px-12 py-6 shadow-ref-xl flex items-center gap-8">
+             <div className="bg-surface-container/60 shadow-ref-xl border border-outline-variant/10 flex flex-col items-center text-center transition-colors duration-300 rounded-[2rem] p-8">
                 <div className="w-14 h-14 bg-pastel-yellow rounded-full border border-white/40 flex items-center justify-center animate-bounce shadow-md">
                   <Trophy size={28} className="text-brand-black" />
                 </div>

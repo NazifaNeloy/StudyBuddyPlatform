@@ -88,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       if (active) {
         setSession(s);
+        if (s?.user) setUser(s.user); // Immediate fallback
         setIsAuthReady(true);
       }
     });
@@ -96,6 +97,7 @@ export const AuthProvider = ({ children }) => {
       console.log(`AuthProvider: Neural Event ${event}`);
       if (active) {
         setSession(s);
+        if (s?.user) setUser(prev => prev || s.user); // Preserve profile if already fetched
         setIsAuthReady(true);
         if (!s) setUser(null);
       }

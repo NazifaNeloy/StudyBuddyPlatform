@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Users as UsersIcon } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
 import adnanImg from '../../assets/asset_adnan.png';
 import nusratImg from '../../assets/asset_nusrat.png';
 import tanvirImg from '../../assets/asset_tanvir.png';
@@ -75,36 +74,8 @@ export const TiltedCards = () => {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    const fetchLiveCircles = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('study_circles')
-          .select(`
-            *,
-            member_count:circle_members(count)
-          `)
-          .limit(6);
-        
-        if (data && data.length > 0) {
-          const colors = ["bg-[#FFD6F3]", "bg-[#B8E1FF]", "bg-[#E0DAFF]", "bg-[#FFEADB]", "bg-[#E0DAFF]", "bg-[#D6FFE4]"];
-          const rotates = ["-5deg", "2deg", "-3deg", "5deg", "-2deg", "4deg"];
-          
-          const transformed = data.map((circle, i) => ({
-            title: circle.name,
-            info: `${circle.member_count?.[0]?.count || 0} Members - ${circle.priority} Priority`,
-            color: colors[i % colors.length],
-            rotate: rotates[i % rotates.length]
-          }));
-          setCards(transformed);
-        }
-      } catch (err) {
-        console.error('Failed to sync live cards:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLiveCircles();
+    // Set loading to false immediately since we're using mock data now
+    setLoading(false);
   }, []);
 
   return (

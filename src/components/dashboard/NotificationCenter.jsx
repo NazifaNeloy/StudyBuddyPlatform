@@ -158,6 +158,56 @@ const NotificationCenter = () => {
     await markAsRead(notification.id);
   };
 
+  const handleJoinRequestAction = async (notification, action) => {
+    if (!notification?.metadata) return;
+    const { circle_id, matched_user_id, circle_name } = notification.metadata;
+
+    if (action === 'approve') {
+      try {
+        // 1. Add user to circle_members
+        const { error: joinError } = await supabase
+          .from('circle_members')
+          .insert({
+            circle_id,
+            user_id: matched_user_id,
+            role: 'member'
+          });
+
+        if (joinError) throw joinError;
+
+        // 2. Update join request status
+        await supabase
+          .from('circle_join_requests')
+          .update({ status: 'accepted' })
+          .eq('circle_id', circle_id)
+          .eq('user_id', matched_user_id);
+
+        // 3. Notify the user they were added
+        await supabase.from('notifications').insert({
+          user_id: matched_user_id,
+          type: 'group_invite_accepted',
+          content: `Joint Protocol Accepted: You are now a member of "${circle_name}"!`,
+          metadata: { circle_id }
+        });
+
+        toast.success('Cognitive Synthesis Approved!');
+      } catch (err) {
+        console.error('Approval error:', err);
+        toast.error('Synthesis failed. Please retry.');
+      }
+    } else {
+      await supabase
+        .from('circle_join_requests')
+        .update({ status: 'rejected' })
+        .eq('circle_id', circle_id)
+        .eq('user_id', matched_user_id);
+      
+      toast('Access Request Denied', { icon: '🫥' });
+    }
+
+    await markAsRead(notification.id);
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -211,6 +261,9 @@ const NotificationCenter = () => {
                          {n.type === 'session_scheduled' && <CalendarIcon className="w-5 h-5 text-brand-black" />}
                          {n.type === 'connection_accepted' && <CheckCircle2 className="w-5 h-5 text-brand-black" />}
                          {n.type === 'match_found' && <Zap className="w-5 h-5 text-brand-black" />}
+                         {n.type === 'group_invite' && <UsersIcon className="w-5 h-5 text-brand-black" />}
+                         {n.type === 'circle_join_request' && <Zap className="w-5 h-5 text-primary" />}
+                         {n.type === 'group_invite_accepted' && <CheckCircle2 className="w-5 h-5 text-pastel-green" />}
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -251,6 +304,63 @@ const NotificationCenter = () => {
                             </button>
                           </div>
                         )}
+
+                         {n.type === 'group_invite' && !n.is_read && (
+                           <div className="flex gap-2 mt-3">
+                             <button
+                               onClick={() => {
+                                 const circleId = n.metadata?.circle_id;
+                                 if (circleId) {
+                                   markAsRead(n.id);
+                                   window.location.href = `/circles/${circleId}`;
+                                 }
+                               }}
+                               className="bg-primary text-white px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                             >
+                               View Circle
+                             </button>
+                             <button
+                               onClick={() => markAsRead(n.id)}
+                               className="bg-white border border-black/10 text-brand-black/60 px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] hover:bg-gray-50 active:scale-95 transition-all"
+                             >
+                               Dismiss
+                             </button>
+                           </div>
+                         )}
+
+                         {n.type === 'circle_join_request' && !n.is_read && (
+                           <div className="flex gap-2 mt-3">
+                             <button
+                               onClick={() => handleJoinRequestAction(n, 'approve')}
+                               className="bg-primary text-white px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                             >
+                               Approve
+                             </button>
+                             <button
+                               onClick={() => handleJoinRequestAction(n, 'deny')}
+                               className="bg-white border border-black/10 text-brand-black/60 px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] hover:bg-gray-50 active:scale-95 transition-all"
+                             >
+                               Deny
+                             </button>
+                           </div>
+                         )}
+
+                         {n.type === 'group_invite_accepted' && !n.is_read && (
+                           <div className="flex gap-2 mt-3">
+                             <button
+                               onClick={() => {
+                                 const circleId = n.metadata?.circle_id;
+                                 if (circleId) {
+                                   markAsRead(n.id);
+                                   window.location.href = `/circles/${circleId}`;
+                                 }
+                               }}
+                               className="bg-primary text-white px-4 py-2 rounded-full font-black text-[10px] uppercase italic tracking-[0.05em] shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                             >
+                               Enter Group
+                             </button>
+                           </div>
+                         )}
                         
                         <p className="text-[9px] font-bold text-brand-black/30 uppercase tracking-[0.1em] mt-2">
                           {n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just Now'}

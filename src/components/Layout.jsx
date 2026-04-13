@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex min-h-screen bg-brand-white text-brand-black selection:bg-brand-purple selection:text-white antialiased">
+    <div className="flex min-h-screen bg-background text-on-surface selection:bg-brand-purple selection:text-white antialiased">
       <Navigation />
       <main className="flex-1 md:ml-64 overflow-x-hidden p-6 md:p-10 mb-24 md:mb-0 relative">
         <motion.div

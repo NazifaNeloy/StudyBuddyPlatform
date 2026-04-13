@@ -35,19 +35,26 @@ const Login = () => {
       if (data?.session) {
         navigate('/dashboard');
       } else {
-        // If no session but no error, it might be an email confirmation pending or a hang
-        throw new Error('Synchronization incomplete. Please verify your credentials or check your email.');
+        // If no session but no error, it might be an email confirmation pending
+        throw new Error('Verification required. Please check your email inbox.');
       }
     } catch (err) {
       console.error('Login Authorization Failure:', err.message);
-      setError(err.message || 'Authentication error. Please check your link.');
+      // Clean up common Supabase error messages for the user
+      let displayError = err.message;
+      if (err.message.includes('Invalid login credentials')) {
+        displayError = 'Invalid email or password. Please try again.';
+      } else if (err.message.includes('Email not confirmed')) {
+        displayError = 'Please verify your email before logging in.';
+      }
+      setError(displayError);
     } finally {
-      if (loading) setLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-bento-white flex flex-col selection:bg-brand-purple selection:text-white">
+    <div className="min-h-screen bg-background flex flex-col selection:bg-brand-purple selection:text-white">
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
