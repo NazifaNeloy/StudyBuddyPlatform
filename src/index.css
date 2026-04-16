@@ -60,6 +60,7 @@
   --color-brand-purple: #6B4EFE;
   --color-brand-black: #000000;
   --color-brand-white: #FFFFFF;
+}
 :root {
   --font-family: var(--font-body);
 }
